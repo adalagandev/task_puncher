@@ -1,0 +1,21 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell.exe",
+            "args": [
+              "-NoProfile",
+              "-ExecutionPolicy",
+              "Bypass",
+              "-File",
+              "D:\\ai_personal_projects\\task_puncher\\.claude\\hooks\\capture-prompt.ps1"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
