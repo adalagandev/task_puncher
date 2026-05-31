@@ -11,6 +11,20 @@ interface Props {
   onDelete: (taskId: number) => void;
 }
 
+// Map the priority score to a boxing weight-class so the hero badge communicates
+// rank at a glance (and tints itself) instead of being a bare number.
+function scoreTier(score: number) {
+  if (score >= 13) return { label: "Knockout", badge: "bg-knockout text-white" };
+  if (score >= 7) return { label: "Contender", badge: "bg-gold text-ink" };
+  return { label: "Undercard", badge: "bg-ink text-bone" };
+}
+
+const STATS = [
+  { key: "impact", label: "Impact" },
+  { key: "urgency", label: "Urgency" },
+  { key: "effort", label: "Effort" },
+] as const;
+
 export function TaskCard({
   task,
   weeklyCount,
@@ -22,71 +36,99 @@ export function TaskCard({
   const done = task.milestones.filter((m) => m.done).length;
   const total = task.milestones.length;
   const pct = total ? Math.round((done / total) * 100) : 0;
+  const complete = pct === 100;
 
-  const weekFull = !task.is_selected_this_week && weeklyCount >= WEEKLY_MAX;
+  const selected = task.is_selected_this_week;
+  const weekFull = !selected && weeklyCount >= WEEKLY_MAX;
+  const tier = scoreTier(task.priority_score);
 
   return (
-    <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+    <div
+      // Selected tasks get a gold "punch" shadow so this-week picks pop out of the grid.
+      className={`relative rounded-lg border-2 border-ink bg-canvas p-4 transition-all ${
+        selected ? "shadow-punch-gold" : "shadow-punch hover:-translate-y-0.5"
+      }`}
+    >
+      {selected && (
+        <span className="absolute -left-2 -top-3 -rotate-3 rounded border-2 border-ink bg-gold px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-ink shadow-punch-sm">
+          ★ This Week
+        </span>
+      )}
+
       <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <h3 className="truncate font-semibold text-slate-900">{task.title}</h3>
+        <div className="min-w-0 pt-1">
+          <h3 className="truncate font-display text-xl uppercase leading-tight tracking-wide text-ink">
+            {task.title}
+          </h3>
           {task.description && (
-            <p className="mt-0.5 text-sm text-slate-500">{task.description}</p>
+            <p className="mt-1 line-clamp-2 text-sm text-ink/60">{task.description}</p>
           )}
         </div>
-        <span
-          className="shrink-0 rounded-full bg-indigo-50 px-2.5 py-1 text-sm font-semibold text-indigo-600"
+
+        {/* HERO: priority score as a tilted fight scorecard; straightens on hover. */}
+        <div
+          className={`shrink-0 -rotate-2 rounded-md border-2 border-ink px-3 py-1.5 text-center shadow-punch-sm transition-transform hover:rotate-0 ${tier.badge}`}
           title="Priority score"
         >
-          {task.priority_score}
-        </span>
+          <div className="font-display text-4xl leading-none">{task.priority_score}</div>
+          <div className="mt-0.5 text-[9px] font-extrabold uppercase tracking-[0.15em]">
+            {tier.label}
+          </div>
+        </div>
       </div>
 
-      <div className="mt-3 flex items-center gap-2 text-xs text-slate-500">
-        <span>I {task.impact}</span>
-        <span>·</span>
-        <span>U {task.urgency}</span>
-        <span>·</span>
-        <span>E {task.effort}</span>
+      <div className="mt-4 grid grid-cols-3 gap-2">
+        {STATS.map((s) => (
+          <div
+            key={s.key}
+            className="rounded border-2 border-ink/15 bg-bone px-2 py-1.5 text-center"
+          >
+            <div className="font-display text-lg leading-none text-ink">{task[s.key]}</div>
+            <div className="mt-0.5 text-[9px] font-bold uppercase tracking-wider text-ink/50">
+              {s.label}
+            </div>
+          </div>
+        ))}
       </div>
 
-      <div className="mt-3">
-        <div className="flex items-center justify-between text-xs text-slate-500">
-          <span>
-            {done}/{total} milestones
-          </span>
+      <div className="mt-4">
+        <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-ink/60">
+          <span>{complete ? "🏆 Cleared" : `${done}/${total} milestones`}</span>
           <span>{pct}%</span>
         </div>
-        <div className="mt-1 h-2 w-full overflow-hidden rounded-full bg-slate-100">
+        <div className="mt-1.5 h-3 w-full overflow-hidden rounded-full border-2 border-ink bg-bone">
+          {/* Fill turns gold at 100% to reward a fully-cleared task. */}
           <div
-            className="h-full rounded-full bg-emerald-500 transition-all"
+            className={`h-full transition-all duration-500 ${
+              complete ? "bg-gold" : "bg-knockout"
+            }`}
             style={{ width: `${pct}%` }}
           />
         </div>
       </div>
 
-      <div className="mt-3 flex flex-wrap items-center gap-2">
+      <div className="mt-4 flex flex-wrap items-center gap-2">
         <button
-          onClick={() => onSetWeekly(task.id, !task.is_selected_this_week)}
+          onClick={() => onSetWeekly(task.id, !selected)}
           disabled={weekFull}
-          className={`rounded-md px-3 py-1.5 text-sm font-medium transition ${
-            task.is_selected_this_week
-              ? "bg-indigo-600 text-white hover:bg-indigo-700"
-              : "border border-slate-300 text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+          className={`rounded-md border-2 border-ink px-3 py-1.5 text-xs font-extrabold uppercase tracking-wide transition ${
+            selected
+              ? "bg-gold text-ink shadow-punch-sm hover:-translate-y-0.5"
+              : "bg-ink text-bone hover:bg-knockout disabled:cursor-not-allowed disabled:border-ink/20 disabled:bg-ink/10 disabled:text-ink/40 disabled:shadow-none"
           }`}
           title={weekFull ? `You already picked ${WEEKLY_MAX} this week` : undefined}
         >
-          {task.is_selected_this_week ? "★ In this week" : "Add to week"}
+          {selected ? "★ In the Ring" : "Add to Week"}
         </button>
         <button
           onClick={() => setExpanded((v) => !v)}
-          className="rounded-md px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-50"
+          className="rounded-md border-2 border-ink/20 px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-ink/70 transition hover:border-ink hover:text-ink"
         >
-          {expanded ? "Hide milestones" : "Show milestones"}
+          {expanded ? "Hide Milestones" : "Milestones"}
         </button>
         <button
           onClick={() => onDelete(task.id)}
-          className="ml-auto rounded-md px-3 py-1.5 text-sm text-rose-600 hover:bg-rose-50"
+          className="ml-auto rounded-md border-2 border-transparent px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-knockout transition hover:border-knockout"
         >
           Delete
         </button>
