@@ -3,5 +3,23 @@
 @tailwind utilities;
 
 body {
-  @apply bg-slate-50 text-slate-800 antialiased;
+  @apply bg-bone text-ink antialiased font-sans;
+  /* Atmospheric fight-poster lighting + a faint canvas weave so the background reads as
+     textured paper rather than a flat fill; fixed so it stays put while content scrolls. */
+  background-image:
+    radial-gradient(circle at 12% -5%, rgba(247, 181, 0, 0.16), transparent 42%),
+    radial-gradient(circle at 92% 8%, rgba(230, 57, 22, 0.12), transparent 45%),
+    repeating-linear-gradient(
+      45deg,
+      rgba(23, 18, 15, 0.022) 0px,
+      rgba(23, 18, 15, 0.022) 1px,
+      transparent 1px,
+      transparent 9px
+    );
+  background-attachment: fixed;
+}
+
+/* Shared uppercase "eyebrow" label above section headings — reused across pages/header. */
+.eyebrow {
+  @apply text-xs font-extrabold uppercase tracking-[0.2em];
 }
