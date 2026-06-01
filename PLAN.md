@@ -119,6 +119,10 @@ the baseline the tickets build on.
 ## EPIC: DATA
 - ✅ **TP-009-DATA--mock-seed** — `backend/app/seed_mock.py` (`python -m app.seed_mock`, `--force`/`--reset`): 8 tasks with random impact/effort/urgency, stored `priority_score`, random valid 5–7 milestones each — [PR #7] — 2026-06-01
 
+## EPIC: DEVX — developer experience / tooling
+- 🔫 **TP-017-DEVX--local-pr-review-hook** — auto-run the `code-reviewer` on every PR opened with `gh pr create` *inside a Claude Code session*, locally (no Anthropic key in GitHub). A `PostToolUse(Bash)` hook detects the command and spawns a detached worker that builds the diff, runs a local headless `claude -p` with the committed reviewer rubric, and posts the result via `gh pr comment`. In-session only by design — PRs from other terminals or github.com won't trigger it. Takes effect after a session restart (hooks load at startup).
+  - Files: `.claude/hooks/pr-review.ps1` (new), `.claude/settings.json`, `.gitignore`, `PLAN.md` (big bite, 4 — cohesive feature)
+
 ## EPIC: FOCUS — weekly focus view
 Make the dashboard about **doing the 3 things that matter now**: show only the top 3 active
 tasks, let tasks complete (auto at 100% milestones **or** a manual toggle), and keep *last
