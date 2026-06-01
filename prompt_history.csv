@@ -92,3 +92,6 @@ AggregateError [ECONNREFUSED]:
 "2026-06-01T16:23:02.9641941+02:00","14307d4d-8c25-4ec9-bb0f-3f72ba199da7","merge #18"
 "2026-06-01T16:26:31.4426217+02:00","14307d4d-8c25-4ec9-bb0f-3f72ba199da7","add to backlog. create a compact list of task at the bottom of the screen. kinda like horizontal rectangle in a vertical que. this list will only show 5 more task then a ""show more task"" clickable link that shows the next 10, then 15, then 20."
 "2026-06-01T16:29:21.2397382+02:00","14307d4d-8c25-4ec9-bb0f-3f72ba199da7","work on tp10, 11, and 12"
+"2026-06-01T17:20:11.5083202+02:00","14307d4d-8c25-4ec9-bb0f-3f72ba199da7","merge #21 and verify it in the app"
+"2026-06-01T18:01:10.5270694+02:00","14307d4d-8c25-4ec9-bb0f-3f72ba199da7","do I just run dev.ps1?"
+"2026-06-01T18:04:14.6650799+02:00","14307d4d-8c25-4ec9-bb0f-3f72ba199da7","I need more mock test data. Create about 10 more"
