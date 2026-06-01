@@ -27,6 +27,21 @@ startup race that causes this.
 
 ## Done
 
+### TP-009-DATA--mock-seed — completed 2026-06-01
+**Seed the database with mock tasks for local development / demos.**
+Added `backend/app/seed_mock.py`, runnable as `python -m app.seed_mock`
+(`--force` to add a batch, `--reset` to replace). Generates 8 tasks with random
+impact/effort/urgency (1–5), a stored `priority_score` computed via
+`services/scoring.py`, and a random valid 5–7 milestones each.
+- Files: `backend/app/seed_mock.py`, `BACKLOG.md` (bite-size)
+
+### TP-008-UX--date-stamp-loud — completed 2026-06-01
+**Make the "All Tasks" date stamp big and loud.**
+Resized the date stamp to match the heading (`font-display text-4xl`) and
+restyled it as a championship-gold badge with the punch shadow so it's
+impossible to miss (`frontend/src/pages/TasksPage.tsx`). Builds on TP-007.
+- Files: `frontend/src/pages/TasksPage.tsx` (bite-size)
+
 ### TP-007-UX--all-tasks-date — completed 2026-06-01
 **Show today's date next to the "All Tasks" heading.**
 Added a date stamp (day of week + full date + browser IANA timezone) beside the heading in
