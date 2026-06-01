@@ -131,12 +131,11 @@ Decisions locked in (2026-06-01):
   mark-complete / reopen** toggle (`status` = `completed` ↔ `active`).
 - Completed tasks render **grayed-out + read-only**, shown only if completed during the
   **previous calendar week (Mon–Sun)**; older completions are hidden.
-- **Open question (resolve before TP-014):** what happens to a task completed in the *current*
-  week? Per the rule above it's neither "active" (leaves the top-3) nor "previous week"
-  (hidden) — i.e. it vanishes immediately. Likely want "this week's completions stay visible
-  too"; confirm.
+- **Resolved (2026-06-01):** a task completed in the *current* week **stays visible** as a win.
+  So the completed section shows both this-week and last-week (Mon–Sun) completions; older
+  completions drop off. TP-014's range is "current week **or** previous week" in browser local time.
 
-- ⬜ **TP-010-FOCUS--completion-fields-backend** — add a `completed_at` (nullable, tz-aware UTC) column to `Task`; expose `status` + `completed_at` in `TaskRead`. SQLite uses `create_all` (no migrations), so the existing `task_puncher.db` needs the column added manually or reseeded.
+- ✅ **TP-010-FOCUS--completion-fields-backend** — added a `completed_at` (nullable, tz-aware UTC) column to `Task` and exposed it in `TaskOut` (`status` was already exposed). SQLite uses `create_all` (no migrations), so the existing `task_puncher.db` got the column via a non-destructive `ALTER TABLE`. — 2026-06-01
   - Files: `backend/app/models/task.py`, `backend/app/schemas/task.py` (bite-size)
 - ⬜ **TP-011-FOCUS--complete-and-reopen** — auto-set `status=completed`+`completed_at=now` when the last milestone is toggled done (reopen/clear if later unchecked) in `routes/milestones.py`; add a manual complete/reopen endpoint in `routes/tasks.py`; share the rule in a new `services/completion.py`. Depends on TP-010.
   - Files: `backend/app/services/completion.py` (new), `backend/app/api/routes/milestones.py`, `backend/app/api/routes/tasks.py` (~3, bite-size)
@@ -144,7 +143,7 @@ Decisions locked in (2026-06-01):
   - Files: `frontend/src/pages/TasksPage.tsx` (bite-size)
 - ⬜ **TP-013-FOCUS--completed-card-readonly** — when `status === "completed"`, mute the `TaskCard` (grayscale/opacity), disable milestone toggles + "Add to Week" + delete, swap in "Reopen"; add "Mark complete" on active cards. Depends on TP-011.
   - Files: `frontend/src/components/TaskCard.tsx`, `frontend/src/components/MilestoneList.tsx`, `frontend/src/hooks/useTasks.ts` (~3, bite-size)
-- ⬜ **TP-014-FOCUS--last-week-wins** — below the active 3, render completed tasks whose `completed_at` falls in the **previous calendar week (Mon–Sun)** in the browser timezone; hide older. Needs a local-time week-range helper. Resolve the open question first. Depends on TP-010 + TP-012.
+- ⬜ **TP-014-FOCUS--last-week-wins** — below the active 3, render completed tasks whose `completed_at` falls in the **current or previous calendar week (Mon–Sun)** in the browser timezone; hide older. Needs a local-time week-range helper. Depends on TP-010 + TP-012.
   - Files: `frontend/src/pages/TasksPage.tsx`, `frontend/src/lib/week.ts` (new) (~2, bite-size)
 
 ## EPIC: DEVX — developer experience / tooling
