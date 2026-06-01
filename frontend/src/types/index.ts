@@ -17,6 +17,7 @@ export interface Task {
   urgency: number;
   priority_score: number;
   status: string;
+  completed_at: string | null;
   is_selected_this_week: boolean;
   selected_at: string | null;
   created_at: string;
