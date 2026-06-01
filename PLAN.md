@@ -154,6 +154,8 @@ Decisions locked in (2026-06-01):
 ## EPIC: FIX — regressions & maintenance (queued)
 - ⬜ **TP-022-FIX--weekly-count-excludes-completed** — completing a task doesn't clear `is_selected_this_week`, so a completed-but-still-selected task counts toward the 3-per-week cap while being hidden from the dashboard (`focusTasks`) — surfaced by the TP-018 PR review. Decide the product rule (does completing free the weekly slot?), then either clear the flag on completion in `services/completion.py` or have `weeklyCount`/the Week page ignore completed tasks.
   - Files: likely `backend/app/services/completion.py` **or** `frontend/src/pages/TasksPage.tsx` + Week view (decide first) (bite-size)
+- ⬜ **TP-025-FIX--naive-utc-timestamps** — `completed_at`/`selected_at` serialize **without a timezone** (e.g. `2026-06-01T15:47:49.256161`, no `Z`/offset) because SQLite+SQLAlchemy stores naive despite `DateTime(timezone=True)` + the tz-aware-UTC convention. The frontend's `new Date(iso)` then parses them as **local**, so `lib/week.ts` buckets a UTC instant by local wall-clock — up to a TZ-offset of skew at the Mon-00:00 week boundary. Found during the TP-014 live verification. Fix at serialization (append `Z` / store tz-aware) or normalize on the client. Pre-existing pattern.
+  - Files: likely `backend/app/schemas/task.py` (serializer) or a client-side parse helper (bite-size)
 
 ## EPIC: DEVX — developer experience / tooling
 - ✅ **TP-017-DEVX--local-pr-review-hook** — auto-run the code-reviewer locally on every in-session `gh pr create` (a `PostToolUse` hook + `.claude/hooks/pr-review.ps1` → headless `claude -p` → `gh pr comment`); no Anthropic key in GitHub. Documented in `AUTOMATION.md`. — [PR #10] — 2026-06-01
@@ -169,6 +171,22 @@ Decisions locked in (2026-06-01):
 
 ## Session log
 Where I left off (rule 9), newest first.
+- **2026-06-01 (evening, session end)** — **Shipped the entire FOCUS epic** (TP-010→014):
+  `completed_at` column (#16), auto/manual complete+reopen (#17), top-3 "This Week's Card"
+  dashboard (#18), read-only completed cards + Mark Complete/Reopen buttons (#20), and the
+  "🏆 Recent Wins" trophy shelf (#21). Resolved the gating open question: **current-week
+  completions stay visible** (wins show this **or** previous Mon–Sun week). Also: ticketed
+  TP-023 (backlog queue, #19) and TP-024 (`--count` mock seeder, #22 — added 10 tasks, **DB
+  now 20**). **Verified the FOCUS flow live in the app** via headless Edge screenshots
+  (top-3 active → Mark Complete drops it off → appears in Recent Wins newest-first → read-only
+  with Reopen). All PRs merged, ancestry-verified (no orphans this time), branches pruned,
+  **0 open PRs**. **Findings logged as tickets:** TP-022 (completing doesn't free the weekly
+  slot) and **TP-025** (naive UTC timestamps → client week-bucketing skew). **Next session:**
+  queued TP-022, TP-025, TP-023 (resolve its open questions first), plus older UX bites
+  TP-005 (milestone label toggle), TP-006 (friendly backend-unreachable state — its value was
+  confirmed when a raw "Internal Server Error" banner flashed during verification), TP-015
+  (New Task form restyle). **Heads-up:** the auto-logged `prompt_history.csv` is at ~96 rows —
+  about to cross the rule-12 threshold of 100, after which roll over to `prompt_history_2.csv`.
 - **2026-06-01 (session end)** — All PRs merged (#9–#14), **0 open**, working tree clean.
   The local PR-review hook is **verified present on `main`** (it had to be re-landed twice —
   PR #10's merge and PR #13's merge each dropped a commit; TP-021/PR #14 fixed it). ⚠️ **The
