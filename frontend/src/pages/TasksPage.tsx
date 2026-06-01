@@ -10,7 +10,10 @@ export function TasksPage({ store }: { store: UseTasks }) {
 
   // The dashboard is about the 3 things to do now: only active (not-completed) tasks,
   // top 3 by score. store.tasks already arrives sorted by priority_score from the API.
-  const focusTasks = store.tasks.filter((t) => t.status !== "completed").slice(0, 3);
+  const focusTasks = useMemo(
+    () => store.tasks.filter((t) => t.status !== "completed").slice(0, 3),
+    [store.tasks],
+  );
 
   // Stamp today's date next to the heading using the browser's own locale + timezone,
   // computed once per mount so it reflects when the lineup was opened.
@@ -68,7 +71,7 @@ export function TasksPage({ store }: { store: UseTasks }) {
             🥊
           </p>
           <p className="mt-2 font-display text-2xl uppercase tracking-wide text-ink">
-            No contenders yet
+            {store.tasks.length === 0 ? "No contenders yet" : "Clean sweep"}
           </p>
           <p className="mt-1 text-sm font-medium text-ink/50">
             {store.tasks.length === 0

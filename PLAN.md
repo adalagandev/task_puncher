@@ -146,6 +146,10 @@ Decisions locked in (2026-06-01):
 - ⬜ **TP-014-FOCUS--last-week-wins** — below the active 3, render completed tasks whose `completed_at` falls in the **current or previous calendar week (Mon–Sun)** in the browser timezone; hide older. Needs a local-time week-range helper. Depends on TP-010 + TP-012.
   - Files: `frontend/src/pages/TasksPage.tsx`, `frontend/src/lib/week.ts` (new) (~2, bite-size)
 
+## EPIC: FIX — regressions & maintenance (queued)
+- ⬜ **TP-022-FIX--weekly-count-excludes-completed** — completing a task doesn't clear `is_selected_this_week`, so a completed-but-still-selected task counts toward the 3-per-week cap while being hidden from the dashboard (`focusTasks`) — surfaced by the TP-018 PR review. Decide the product rule (does completing free the weekly slot?), then either clear the flag on completion in `services/completion.py` or have `weeklyCount`/the Week page ignore completed tasks.
+  - Files: likely `backend/app/services/completion.py` **or** `frontend/src/pages/TasksPage.tsx` + Week view (decide first) (bite-size)
+
 ## EPIC: DEVX — developer experience / tooling
 - ✅ **TP-017-DEVX--local-pr-review-hook** — auto-run the code-reviewer locally on every in-session `gh pr create` (a `PostToolUse` hook + `.claude/hooks/pr-review.ps1` → headless `claude -p` → `gh pr comment`); no Anthropic key in GitHub. Documented in `AUTOMATION.md`. — [PR #10] — 2026-06-01
   - ⚠️ **Lost in merge:** PR #10's merge commit was orphaned (main went #9→#11→#12, bypassing #10), so the hook never reached `main`. Re-landed via TP-020 (PR #13).
