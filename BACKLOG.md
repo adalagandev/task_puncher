@@ -1,7 +1,7 @@
 # Backlog
 
-Queued tasks, following the `TP-{n}-{epic}--{feature-name}` convention
-(`but_first_read_this_claude.md`). Each gets its own branch + PR when picked up.
+Queued tasks, following the `TP-{n}-{EPIC}--{feature-name}` convention
+(`whats_up_claude.md`). Each gets its own branch + PR when picked up.
 
 ## Open
 
@@ -26,4 +26,12 @@ startup race that causes this.
 - Type: UX/resilience. Prompted by a transient `ECONNREFUSED` proxy error during dev.
 
 ## Done
+
+### TP-007-UX--all-tasks-date — completed 2026-06-01
+**Show today's date next to the "All Tasks" heading.**
+Added a date stamp (day of week + full date + browser IANA timezone) beside the heading in
+`frontend/src/pages/TasksPage.tsx`, formatted via `Intl.DateTimeFormat` using the browser's
+own locale and `resolvedOptions().timeZone`.
+- Files: `frontend/src/pages/TasksPage.tsx`, `BACKLOG.md` (bite-size)
+
 <!-- move completed task_ids here -->
