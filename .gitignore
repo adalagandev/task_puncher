@@ -14,3 +14,6 @@ frontend/dist/
 .env
 .vscode/
 .idea/
+
+# Claude Code local artifacts
+.claude/pr-review.log
