@@ -3,7 +3,7 @@ import type { Task } from "../types";
 interface Props {
   task: Task;
   onToggle: (milestoneId: number, done: boolean) => void;
-  // Completed tasks are read-only trophies — checkboxes are shown but locked.
+  /** Completed tasks are read-only trophies — checkboxes are shown but locked. */
   readOnly?: boolean;
 }
 
@@ -23,7 +23,7 @@ export function MilestoneList({ task, onToggle, readOnly = false }: Props) {
             }`}
             checked={m.done}
             disabled={readOnly}
-            onChange={(e) => onToggle(m.id, e.target.checked)}
+            onChange={readOnly ? undefined : (e) => onToggle(m.id, e.target.checked)}
           />
           <div className="min-w-0">
             <p
