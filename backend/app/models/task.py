@@ -30,6 +30,9 @@ class Task(Base):
     priority_score: Mapped[float] = mapped_column(Float, default=0.0, index=True)
 
     status: Mapped[str] = mapped_column(String(20), default="active")
+    # Set when status flips to "completed" (auto on last milestone, or manual toggle);
+    # drives the "this/last week's wins" view, so it must be tz-aware UTC.
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     # Weekly selection (the "3 things this week"). Capped at 3 in services.weekly.
     is_selected_this_week: Mapped[bool] = mapped_column(default=False)
