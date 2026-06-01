@@ -11,6 +11,8 @@ export interface UseTasks {
   createTask: (data: TaskInput) => Promise<boolean>;
   updateTask: (id: number, data: Partial<TaskInput & { status: string }>) => Promise<void>;
   deleteTask: (id: number) => Promise<void>;
+  completeTask: (id: number) => Promise<void>;
+  reopenTask: (id: number) => Promise<void>;
   addMilestone: (taskId: number, data: MilestoneInput) => Promise<void>;
   toggleMilestone: (taskId: number, milestoneId: number, done: boolean) => Promise<void>;
   deleteMilestone: (taskId: number, milestoneId: number) => Promise<void>;
@@ -63,6 +65,8 @@ export function useTasks(): UseTasks {
     },
     updateTask: (id, data) => run(() => api.updateTask(id, data)).then(refresh),
     deleteTask: (id) => run(() => api.deleteTask(id)).then(refresh),
+    completeTask: (id) => run(() => api.completeTask(id)).then(refresh),
+    reopenTask: (id) => run(() => api.reopenTask(id)).then(refresh),
     addMilestone: (taskId, data) => run(() => api.addMilestone(taskId, data)).then(refresh),
     toggleMilestone: (taskId, milestoneId, done) =>
       run(() => api.updateMilestone(taskId, milestoneId, { done })).then(refresh),

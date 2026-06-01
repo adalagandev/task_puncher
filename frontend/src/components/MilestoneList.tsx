@@ -3,9 +3,11 @@ import type { Task } from "../types";
 interface Props {
   task: Task;
   onToggle: (milestoneId: number, done: boolean) => void;
+  // Completed tasks are read-only trophies — checkboxes are shown but locked.
+  readOnly?: boolean;
 }
 
-export function MilestoneList({ task, onToggle }: Props) {
+export function MilestoneList({ task, onToggle, readOnly = false }: Props) {
   return (
     <ul className="mt-4 space-y-2 border-t-2 border-ink/10 pt-3">
       {task.milestones.map((m, i) => (
@@ -16,8 +18,11 @@ export function MilestoneList({ task, onToggle }: Props) {
           </span>
           <input
             type="checkbox"
-            className="mt-0.5 h-4 w-4 shrink-0 accent-knockout"
+            className={`mt-0.5 h-4 w-4 shrink-0 accent-knockout ${
+              readOnly ? "cursor-not-allowed" : ""
+            }`}
             checked={m.done}
+            disabled={readOnly}
             onChange={(e) => onToggle(m.id, e.target.checked)}
           />
           <div className="min-w-0">

@@ -9,6 +9,8 @@ interface Props {
   onToggleMilestone: (taskId: number, milestoneId: number, done: boolean) => void;
   onSetWeekly: (taskId: number, selected: boolean) => void;
   onDelete: (taskId: number) => void;
+  onComplete: (taskId: number) => void;
+  onReopen: (taskId: number) => void;
 }
 
 // Map the priority score to a boxing weight-class so the hero badge communicates
@@ -31,6 +33,8 @@ export function TaskCard({
   onToggleMilestone,
   onSetWeekly,
   onDelete,
+  onComplete,
+  onReopen,
 }: Props) {
   const [expanded, setExpanded] = useState(false);
   const done = task.milestones.filter((m) => m.done).length;
@@ -38,20 +42,31 @@ export function TaskCard({
   const pct = total ? Math.round((done / total) * 100) : 0;
   const complete = pct === 100;
 
+  // Completed tasks are read-only trophies: muted, no week/delete/complete actions.
+  const isCompleted = task.status === "completed";
   const selected = task.is_selected_this_week;
   const weekFull = !selected && weeklyCount >= WEEKLY_MAX;
   const tier = scoreTier(task.priority_score);
 
   return (
     <div
-      // Selected tasks get a gold "punch" shadow so this-week picks pop out of the grid.
+      // Selected tasks get a gold "punch" shadow; completed ones gray out and flatten.
       className={`relative rounded-lg border-2 border-ink bg-canvas p-4 transition-all ${
-        selected ? "shadow-punch-gold" : "shadow-punch hover:-translate-y-0.5"
+        isCompleted
+          ? "opacity-60 grayscale shadow-none"
+          : selected
+            ? "shadow-punch-gold"
+            : "shadow-punch hover:-translate-y-0.5"
       }`}
     >
-      {selected && (
+      {selected && !isCompleted && (
         <span className="absolute -left-2 -top-3 -rotate-3 rounded border-2 border-ink bg-gold px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-ink shadow-punch-sm">
           ★ This Week
+        </span>
+      )}
+      {isCompleted && (
+        <span className="absolute -left-2 -top-3 -rotate-3 rounded border-2 border-ink bg-ink px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-bone shadow-punch-sm">
+          🏆 Cleared
         </span>
       )}
 
@@ -108,35 +123,56 @@ export function TaskCard({
       </div>
 
       <div className="mt-4 flex flex-wrap items-center gap-2">
-        <button
-          onClick={() => onSetWeekly(task.id, !selected)}
-          disabled={weekFull}
-          className={`rounded-md border-2 border-ink px-3 py-1.5 text-xs font-extrabold uppercase tracking-wide transition ${
-            selected
-              ? "bg-gold text-ink shadow-punch-sm hover:-translate-y-0.5"
-              : "bg-ink text-bone hover:bg-knockout disabled:cursor-not-allowed disabled:border-ink/20 disabled:bg-ink/10 disabled:text-ink/40 disabled:shadow-none"
-          }`}
-          title={weekFull ? `You already picked ${WEEKLY_MAX} this week` : undefined}
-        >
-          {selected ? "★ In the Ring" : "Add to Week"}
-        </button>
+        {isCompleted ? (
+          // Read-only trophy: the only action is to send it back into the ring.
+          <button
+            onClick={() => onReopen(task.id)}
+            className="rounded-md border-2 border-ink bg-ink px-3 py-1.5 text-xs font-extrabold uppercase tracking-wide text-bone transition hover:bg-knockout"
+          >
+            ↩ Reopen
+          </button>
+        ) : (
+          <>
+            <button
+              onClick={() => onSetWeekly(task.id, !selected)}
+              disabled={weekFull}
+              className={`rounded-md border-2 border-ink px-3 py-1.5 text-xs font-extrabold uppercase tracking-wide transition ${
+                selected
+                  ? "bg-gold text-ink shadow-punch-sm hover:-translate-y-0.5"
+                  : "bg-ink text-bone hover:bg-knockout disabled:cursor-not-allowed disabled:border-ink/20 disabled:bg-ink/10 disabled:text-ink/40 disabled:shadow-none"
+              }`}
+              title={weekFull ? `You already picked ${WEEKLY_MAX} this week` : undefined}
+            >
+              {selected ? "★ In the Ring" : "Add to Week"}
+            </button>
+            <button
+              onClick={() => onComplete(task.id)}
+              className="rounded-md border-2 border-ink bg-gold px-3 py-1.5 text-xs font-extrabold uppercase tracking-wide text-ink shadow-punch-sm transition hover:-translate-y-0.5"
+            >
+              ✓ Mark Complete
+            </button>
+          </>
+        )}
         <button
           onClick={() => setExpanded((v) => !v)}
           className="rounded-md border-2 border-ink/20 px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-ink/70 transition hover:border-ink hover:text-ink"
         >
           {expanded ? "Hide Milestones" : "Milestones"}
         </button>
-        <button
-          onClick={() => onDelete(task.id)}
-          className="ml-auto rounded-md border-2 border-transparent px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-knockout transition hover:border-knockout"
-        >
-          Delete
-        </button>
+        {!isCompleted && (
+          <button
+            onClick={() => onDelete(task.id)}
+            className="ml-auto rounded-md border-2 border-transparent px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-knockout transition hover:border-knockout"
+          >
+            Delete
+          </button>
+        )}
       </div>
 
       {expanded && (
         <MilestoneList
           task={task}
+          readOnly={isCompleted}
           onToggle={(mId, isDone) => onToggleMilestone(task.id, mId, isDone)}
         />
       )}
