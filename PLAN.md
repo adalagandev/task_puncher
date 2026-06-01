@@ -119,6 +119,8 @@ the baseline the tickets build on.
 
 ## EPIC: DATA
 - ✅ **TP-009-DATA--mock-seed** — `backend/app/seed_mock.py` (`python -m app.seed_mock`, `--force`/`--reset`): 8 tasks with random impact/effort/urgency, stored `priority_score`, random valid 5–7 milestones each — [PR #7] — 2026-06-01
+- ✅ **TP-024-DATA--more-mock-seed** — expanded the mock title pool to 22 and added `--count N` (sample N random titles; bypasses the empty-DB guard). Ran `--count 10` to add 10 more active tasks (DB now 20). — 2026-06-01
+  - Files: `backend/app/seed_mock.py` (bite-size)
 
 ## EPIC: FOCUS — weekly focus view
 Make the dashboard about **doing the 3 things that matter now**: show only the top 3 active
