@@ -17,3 +17,5 @@ Read this before doing anything in this repo.
 9. **Session end** — when I end a session, note in `PLAN.md` where I left off so
    I can continue next time.
 10. **Anthropic key** - NEVER EVER commit my Anthropic key or Claude keys remotely.
+11. **Pending Pull Requests** - Pull pending pull request at start of claude session.
+12. **Prompt audit** if number for prompt records hit 100, 
