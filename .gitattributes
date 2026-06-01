@@ -1,0 +1,3 @@
+# prompt_history.csv is an append-only log; union both sides on merge so concurrent
+# appends across branches/stashes auto-resolve instead of conflicting every time.
+prompt_history.csv merge=union
