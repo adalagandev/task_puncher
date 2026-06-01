@@ -137,8 +137,8 @@ Decisions locked in (2026-06-01):
 
 - ✅ **TP-010-FOCUS--completion-fields-backend** — added a `completed_at` (nullable, tz-aware UTC) column to `Task` and exposed it in `TaskOut` (`status` was already exposed). SQLite uses `create_all` (no migrations), so the existing `task_puncher.db` got the column via a non-destructive `ALTER TABLE`. — 2026-06-01
   - Files: `backend/app/models/task.py`, `backend/app/schemas/task.py` (bite-size)
-- ⬜ **TP-011-FOCUS--complete-and-reopen** — auto-set `status=completed`+`completed_at=now` when the last milestone is toggled done (reopen/clear if later unchecked) in `routes/milestones.py`; add a manual complete/reopen endpoint in `routes/tasks.py`; share the rule in a new `services/completion.py`. Depends on TP-010.
-  - Files: `backend/app/services/completion.py` (new), `backend/app/api/routes/milestones.py`, `backend/app/api/routes/tasks.py` (~3, bite-size)
+- ✅ **TP-011-FOCUS--complete-and-reopen** — new `services/completion.py` (`set_completed` idempotently stamps/clears `completed_at`; `sync_completion_from_milestones` makes completion follow milestone state) wired into `routes/milestones.py` (add/update/delete auto-complete + reopen); added `POST /tasks/{id}/complete` + `/reopen` in `routes/tasks.py`; `tests/test_completion.py` covers auto + manual paths. 20 tests pass. — 2026-06-01
+  - Files: `backend/app/services/completion.py` (new), `backend/app/api/routes/milestones.py`, `backend/app/api/routes/tasks.py`, `backend/tests/test_completion.py` (new)
 - ⬜ **TP-012-FOCUS--top-3-active-list** — All Tasks page filters to `status !== "completed"`, keeps the score sort, slices to 3; adjust empty/heading copy. Depends on TP-010.
   - Files: `frontend/src/pages/TasksPage.tsx` (bite-size)
 - ⬜ **TP-013-FOCUS--completed-card-readonly** — when `status === "completed"`, mute the `TaskCard` (grayscale/opacity), disable milestone toggles + "Add to Week" + delete, swap in "Reopen"; add "Mark complete" on active cards. Depends on TP-011.
