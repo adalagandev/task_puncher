@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { TaskCard } from "../components/TaskCard";
 import { TaskForm } from "../components/TaskForm";
 import type { UseTasks } from "../hooks/useTasks";
+import { isInCurrentOrPreviousWeek } from "../lib/week";
 import { MILESTONE_MAX, MILESTONE_MIN } from "../types";
 
 export function TasksPage({ store }: { store: UseTasks }) {
@@ -12,6 +13,21 @@ export function TasksPage({ store }: { store: UseTasks }) {
   // top 3 by score. store.tasks already arrives sorted by priority_score from the API.
   const focusTasks = useMemo(
     () => store.tasks.filter((t) => t.status !== "completed").slice(0, 3),
+    [store.tasks],
+  );
+
+  // Recent wins: tasks completed this or last calendar week (local time), newest first.
+  // Older completions drop off so the trophy shelf stays current.
+  const wins = useMemo(
+    () =>
+      store.tasks
+        .filter(
+          (t) =>
+            t.status === "completed" &&
+            t.completed_at &&
+            isInCurrentOrPreviousWeek(t.completed_at),
+        )
+        .sort((a, b) => (a.completed_at! < b.completed_at! ? 1 : -1)),
     [store.tasks],
   );
 
@@ -96,6 +112,34 @@ export function TasksPage({ store }: { store: UseTasks }) {
             </div>
           ))}
         </div>
+      )}
+
+      {/* Recent wins: read-only trophy cards for this/last week's completions. */}
+      {!store.loading && wins.length > 0 && (
+        <section className="border-t-2 border-ink/15 pt-6">
+          <p className="eyebrow text-gold">Trophy Shelf</p>
+          <h2 className="font-display text-3xl uppercase leading-none tracking-wide text-ink">
+            🏆 Recent Wins
+          </h2>
+          <p className="mt-1 text-sm font-medium text-ink/60">
+            Cleared this week and last — reopen one to send it back into the ring.
+          </p>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            {wins.map((task, i) => (
+              <div key={task.id} className="animate-slam" style={{ animationDelay: `${i * 55}ms` }}>
+                <TaskCard
+                  task={task}
+                  weeklyCount={weeklyCount}
+                  onToggleMilestone={store.toggleMilestone}
+                  onSetWeekly={store.setWeekly}
+                  onDelete={store.deleteTask}
+                  onComplete={store.completeTask}
+                  onReopen={store.reopenTask}
+                />
+              </div>
+            ))}
+          </div>
+        </section>
       )}
     </div>
   );
