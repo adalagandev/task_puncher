@@ -62,6 +62,8 @@ export function WeekPage({ store }: { store: UseTasks }) {
                 onToggleMilestone={store.toggleMilestone}
                 onSetWeekly={store.setWeekly}
                 onDelete={store.deleteTask}
+                onComplete={store.completeTask}
+                onReopen={store.reopenTask}
               />
             </div>
           ))}

@@ -34,6 +34,8 @@ export const api = {
   updateTask: (id: number, data: Partial<TaskInput & { status: string }>) =>
     request<Task>(`/tasks/${id}`, { method: "PATCH", body: JSON.stringify(data) }),
   deleteTask: (id: number) => request<void>(`/tasks/${id}`, { method: "DELETE" }),
+  completeTask: (id: number) => request<Task>(`/tasks/${id}/complete`, { method: "POST" }),
+  reopenTask: (id: number) => request<Task>(`/tasks/${id}/reopen`, { method: "POST" }),
 
   addMilestone: (taskId: number, data: MilestoneInput) =>
     request<Milestone>(`/tasks/${taskId}/milestones`, {
