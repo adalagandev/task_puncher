@@ -7,6 +7,7 @@ from app.models.milestone import Milestone
 from app.models.task import Task
 from app.models.user import User
 from app.schemas.task import TaskCreate, TaskOut, TaskUpdate
+from app.services.completion import set_completed
 from app.services.scoring import compute_priority
 
 router = APIRouter(prefix="/api/tasks", tags=["tasks"])
@@ -77,6 +78,34 @@ def update_task(
         setattr(task, field, value)
     # Recompute the score whenever any scoring input changed.
     task.priority_score = compute_priority(task.impact, task.urgency, task.effort)
+    db.commit()
+    db.refresh(task)
+    return task
+
+
+@router.post("/{task_id}/complete", response_model=TaskOut)
+def complete_task(
+    task_id: int,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    """Manually mark a task complete (stamps completed_at), regardless of milestones."""
+    task = _get_owned_task(db, task_id, user)
+    set_completed(task, True)
+    db.commit()
+    db.refresh(task)
+    return task
+
+
+@router.post("/{task_id}/reopen", response_model=TaskOut)
+def reopen_task(
+    task_id: int,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    """Reopen a completed task (clears completed_at, back to active)."""
+    task = _get_owned_task(db, task_id, user)
+    set_completed(task, False)
     db.commit()
     db.refresh(task)
     return task
