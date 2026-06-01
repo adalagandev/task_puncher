@@ -153,14 +153,23 @@ Decisions locked in (2026-06-01):
 
 ## EPIC: DOCS — documentation & process
 - ✅ **TP-016-DOCS--plan-task-tracker** — made PLAN.md the single task tracker (rules 8–10) and retired `BACKLOG.md`. — [PR #9] — 2026-06-01
-- 🔫 **TP-020-DOCS--automation-doc** — document every hook/script/agent in `AUTOMATION.md`; backfill the merged TP-016/017/018/019 tickets into this tracker; **also restore the orphaned TP-017 hook** (`pr-review.ps1`, the `PostToolUse` wiring, and the `.gitignore` log entry) that #10's lost merge dropped.
-  - Files: `AUTOMATION.md` (new), `PLAN.md`, `.claude/hooks/pr-review.ps1` (restored), `.claude/settings.json`, `.gitignore` (big bite, 5 — restore + docs are coupled)
+- ✅ **TP-020-DOCS--automation-doc** — `AUTOMATION.md` documenting every hook/script/agent; backfilled the merged tickets into this tracker. — [PR #13] — 2026-06-01
 
 ## EPIC: FIX — regressions & maintenance
 - ✅ **TP-019-FIX--date-tonedown-and-prompt-log-union** — re-applied the lost toned-down date stamp (commit `8b7a1d6` never reached main) and marked `prompt_history.csv` `merge=union` to stop the recurring log conflicts. — [PR #12] — 2026-06-01
+- ✅ **TP-021-FIX--restore-pr-review-hook** — landed the PR-review hook on `main` (`pr-review.ps1` + `PostToolUse` wiring + `.gitignore` entry); PR #13's merge had dropped the restore commit. Verified present on `main`. — [PR #14] — 2026-06-01
 
 ## Session log
 Where I left off (rule 9), newest first.
+- **2026-06-01 (session end)** — All PRs merged (#9–#14), **0 open**, working tree clean.
+  The local PR-review hook is **verified present on `main`** (it had to be re-landed twice —
+  PR #10's merge and PR #13's merge each dropped a commit; TP-021/PR #14 fixed it). ⚠️ **The
+  hook needs a Claude Code session restart to load** (hooks load at startup; this session
+  predated the hook on disk) — after restart, in-session `gh pr create` auto-reviews.
+  **Next session:** start the FOCUS epic at **TP-010**, but first resolve the open question on
+  TP-014 (should *current*-week completions stay visible, or strictly previous week?). Also
+  queued: TP-005, TP-006, TP-015. **Watch out:** merges here have twice orphaned commits —
+  after merging, verify the commit is an ancestor of `main`.
 - **2026-06-01 (afternoon)** — Shipped TP-016 (tracker), TP-017 (local PR-review hook),
   TP-018 (smiley), TP-019 (date tone-down + log union); documented all hooks/scripts in
   `AUTOMATION.md` (TP-020) and backfilled this tracker (added DEVX/DOCS/FIX epics).
@@ -183,3 +192,5 @@ Where I left off (rule 9), newest first.
 [PR #10]: https://github.com/adalagandev/task_puncher/pull/10
 [PR #11]: https://github.com/adalagandev/task_puncher/pull/11
 [PR #12]: https://github.com/adalagandev/task_puncher/pull/12
+[PR #13]: https://github.com/adalagandev/task_puncher/pull/13
+[PR #14]: https://github.com/adalagandev/task_puncher/pull/14
