@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { TaskCard } from "../components/TaskCard";
 import { TaskForm } from "../components/TaskForm";
 import type { UseTasks } from "../hooks/useTasks";
@@ -8,14 +8,32 @@ export function TasksPage({ store }: { store: UseTasks }) {
   const [showForm, setShowForm] = useState(false);
   const weeklyCount = store.tasks.filter((t) => t.is_selected_this_week).length;
 
+  // Stamp today's date next to the heading using the browser's own locale + timezone,
+  // computed once per mount so it reflects when the lineup was opened.
+  const today = useMemo(() => {
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const date = new Intl.DateTimeFormat(undefined, {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    }).format(new Date());
+    return `${date} · ${timeZone}`;
+  }, []);
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="eyebrow text-knockout">The Lineup</p>
-          <h2 className="font-display text-4xl uppercase leading-none tracking-wide text-ink">
-            All Tasks
-          </h2>
+          <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+            <h2 className="font-display text-4xl uppercase leading-none tracking-wide text-ink">
+              All Tasks
+            </h2>
+            <span className="text-xs font-bold uppercase tracking-wide text-ink/50">
+              {today}
+            </span>
+          </div>
           <p className="mt-1 text-sm font-medium text-ink/60">
             Ranked by priority score — heaviest hitters up top.
           </p>

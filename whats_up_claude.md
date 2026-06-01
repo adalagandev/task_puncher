@@ -5,7 +5,7 @@ Read this before doing anything in this repo.
 1. **Capture prompts** — log every prompt into `prompt_history.csv`.
 2. **Plan first** — outline any code change before making it.
 3. **Task IDs** — break each plan into bite-size tasks named
-   `TP-{incremental-number}-{feature-epic}--{feature-name}`.
+   `TP-{incremental-number}-{FEATURE-EPIC}--{feature-name}`.
 4. **Commits** — prefix every commit message with the task ID.
 5. **Bite size** — ≤3 files changed. "Big bite" = 3–7 files. Flag me if it's more.
    New files count as changes.
