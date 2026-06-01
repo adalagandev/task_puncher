@@ -53,17 +53,27 @@ try {
   $rubric = (Get-Content (Join-Path $repo '.claude\agents\code-reviewer.md') -Raw) -replace '(?s)^---.*?---\s*', ''
   $instruction = 'Review ONLY the unified diff provided on stdin. Do not run any commands or read other files. Output the review in the format described in your instructions.'
 
+  # Force UTF-8 on the pipe to/from the node CLI; PS 5.1 otherwise decodes claude's stdout
+  # with the OEM codepage and turns em-dashes etc. into mojibake. No `2>&1` — merging a
+  # native exe's stderr on PS 5.1 wraps lines in error records and can corrupt the output.
+  $prevOut = [Console]::OutputEncoding; $prevIn = [Console]::InputEncoding
+  [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+  [Console]::InputEncoding = [System.Text.Encoding]::UTF8
+  $OutputEncoding = [System.Text.Encoding]::UTF8
   # Run from a neutral dir so this project's own hooks don't fire on the headless call.
   Push-Location $env:TEMP
-  $review = ($diff | & $claude.Source -p $instruction --model sonnet --append-system-prompt $rubric 2>&1 | Out-String)
+  $review = ($diff | & $claude.Source -p $instruction --model sonnet --append-system-prompt $rubric | Out-String)
   Pop-Location
+  [Console]::OutputEncoding = $prevOut; [Console]::InputEncoding = $prevIn
   if (-not $review.Trim()) { Write-Log 'Empty review output; not posting.'; exit 0 }
 
   $body = "**Automated local code review** (code-reviewer, sonnet) - generated locally on this machine, not in CI.`n`n$review"
   if ($DryRun) { Write-Log "DRY RUN - review follows:`n$body"; Write-Output $body; exit 0 }
 
+  # Write UTF-8 *without* BOM — Out-File -Encoding utf8 on PS 5.1 prepends a BOM that shows
+  # up as a stray glyph at the top of the posted comment.
   $tmp = Join-Path $env:TEMP "pr-review-$PrNumber.md"
-  $body | Out-File -FilePath $tmp -Encoding utf8
+  [System.IO.File]::WriteAllText($tmp, $body, (New-Object System.Text.UTF8Encoding($false)))
   & gh pr comment $PrNumber --body-file $tmp
   Remove-Item $tmp -ErrorAction SilentlyContinue
   Write-Log "Posted review to PR #$PrNumber"
