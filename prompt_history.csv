@@ -58,3 +58,7 @@ AggregateError [ECONNREFUSED]:
 "2026-06-01T09:12:32.0663930+02:00","0eafdceb-9530-44e1-9ba2-6873f167fdca","read but_first_read*"
 "2026-06-01T09:18:07.9125565+02:00","0eafdceb-9530-44e1-9ba2-6873f167fdca","I like how you organized that, rewrite but_first_read_this_claude.md like that. Then, rename the file whats_up_claude.md"
 "2026-06-01T09:32:41.6524822+02:00","0eafdceb-9530-44e1-9ba2-6873f167fdca","let's make sure no sensitive creds are committed into github. can you verify that? Then add BACKLOG.md into the branch. Commit/push everything. Thanks."
+"2026-06-01T09:38:45.7161598+02:00","0eafdceb-9530-44e1-9ba2-6873f167fdca","Thanks. Let's do some AI agentic work here. Guide me how to create an agent that will perform code reviews."
+"2026-06-01T09:59:33.8812454+02:00","0eafdceb-9530-44e1-9ba2-6873f167fdca","hmm let's run this agent went a PR is created, and comment into the PR itself."
+"2026-06-01T10:07:57.8835812+02:00","0eafdceb-9530-44e1-9ba2-6873f167fdca","hmmm I do not want to put my anthrophic key in github.com, least for now. Can I still create a PR locally?"
+"2026-06-01T10:21:50.9910793+02:00","0eafdceb-9530-44e1-9ba2-6873f167fdca","PR already exists, and I already merged it. But I still want to test this out. Let's do this. Let's make a quick UI change, add the current date next to ALL TASKS with day of the week and timezone of the browser. Do the usual ticket, etc. etc."
