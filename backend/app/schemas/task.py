@@ -46,6 +46,7 @@ class TaskOut(BaseModel):
     urgency: int
     priority_score: float
     status: str
+    completed_at: datetime | None
     is_selected_this_week: bool
     selected_at: datetime | None
     created_at: datetime
