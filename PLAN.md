@@ -139,7 +139,7 @@ Decisions locked in (2026-06-01):
   - Files: `backend/app/models/task.py`, `backend/app/schemas/task.py` (bite-size)
 - ✅ **TP-011-FOCUS--complete-and-reopen** — new `services/completion.py` (`set_completed` idempotently stamps/clears `completed_at`; `sync_completion_from_milestones` makes completion follow milestone state) wired into `routes/milestones.py` (add/update/delete auto-complete + reopen); added `POST /tasks/{id}/complete` + `/reopen` in `routes/tasks.py`; `tests/test_completion.py` covers auto + manual paths. 20 tests pass. — 2026-06-01
   - Files: `backend/app/services/completion.py` (new), `backend/app/api/routes/milestones.py`, `backend/app/api/routes/tasks.py`, `backend/tests/test_completion.py` (new)
-- ⬜ **TP-012-FOCUS--top-3-active-list** — All Tasks page filters to `status !== "completed"`, keeps the score sort, slices to 3; adjust empty/heading copy. Depends on TP-010.
+- ✅ **TP-012-FOCUS--top-3-active-list** — dashboard now shows only the top 3 active (`status !== "completed"`) tasks by score (`focusTasks`); heading renamed "All Tasks" → **"This Week's Card"** with sub-copy "Your 3 to focus on"; empty state distinguishes no-tasks-yet from all-active-done. Depends on TP-010. — 2026-06-01
   - Files: `frontend/src/pages/TasksPage.tsx` (bite-size)
 - ⬜ **TP-013-FOCUS--completed-card-readonly** — when `status === "completed"`, mute the `TaskCard` (grayscale/opacity), disable milestone toggles + "Add to Week" + delete, swap in "Reopen"; add "Mark complete" on active cards. Depends on TP-011.
   - Files: `frontend/src/components/TaskCard.tsx`, `frontend/src/components/MilestoneList.tsx`, `frontend/src/hooks/useTasks.ts` (~3, bite-size)
