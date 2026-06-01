@@ -109,6 +109,7 @@ the baseline the tickets build on.
 ## EPIC: UX — incremental polish
 - ✅ **TP-007-UX--all-tasks-date** — today's date next to the "All Tasks" heading (day + full date + browser timezone via `Intl.DateTimeFormat`) — [PR #5] — 2026-06-01
 - ✅ **TP-008-UX--date-stamp** — sized the date stamp to the heading, then toned it to the heading's own display font/size/uppercase, muted (`text-ink/50`) — [PR #6] — 2026-06-01
+- ✅ **TP-018-UX--all-tasks-emoji** — decorative `aria-hidden` smiley before the "All Tasks" heading (ASCII `&#x1F60A;` entity to avoid mojibake) — [PR #11] — 2026-06-01
 - ⬜ **TP-005-UX--milestone-label-toggle** — clicking a milestone's label text (not just the checkbox) toggles `done`; wrap input + text in a `<label>` or wire `id`/`htmlFor`, keep the `onToggle(m.id, !m.done)` flow.
   - Files: `frontend/src/components/MilestoneList.tsx` (1, bite-size)
 - ⬜ **TP-006-UX--backend-unreachable-state** — show a friendly "can't reach the server — is the backend running? [Retry]" state instead of the raw Vite `ECONNREFUSED`/5xx error; also harden `dev.ps1` to wait for `:8000` before starting the frontend.
@@ -146,8 +147,23 @@ Decisions locked in (2026-06-01):
 - ⬜ **TP-014-FOCUS--last-week-wins** — below the active 3, render completed tasks whose `completed_at` falls in the **previous calendar week (Mon–Sun)** in the browser timezone; hide older. Needs a local-time week-range helper. Resolve the open question first. Depends on TP-010 + TP-012.
   - Files: `frontend/src/pages/TasksPage.tsx`, `frontend/src/lib/week.ts` (new) (~2, bite-size)
 
+## EPIC: DEVX — developer experience / tooling
+- ✅ **TP-017-DEVX--local-pr-review-hook** — auto-run the code-reviewer locally on every in-session `gh pr create` (a `PostToolUse` hook + `.claude/hooks/pr-review.ps1` → headless `claude -p` → `gh pr comment`); no Anthropic key in GitHub. Documented in `AUTOMATION.md`. — [PR #10] — 2026-06-01
+
+## EPIC: DOCS — documentation & process
+- ✅ **TP-016-DOCS--plan-task-tracker** — made PLAN.md the single task tracker (rules 8–10) and retired `BACKLOG.md`. — [PR #9] — 2026-06-01
+- 🔫 **TP-020-DOCS--automation-doc** — document every hook/script/agent in `AUTOMATION.md`; backfill the merged TP-016/017/018/019 tickets into this tracker.
+  - Files: `AUTOMATION.md` (new), `PLAN.md` (bite-size)
+
+## EPIC: FIX — regressions & maintenance
+- ✅ **TP-019-FIX--date-tonedown-and-prompt-log-union** — re-applied the lost toned-down date stamp (commit `8b7a1d6` never reached main) and marked `prompt_history.csv` `merge=union` to stop the recurring log conflicts. — [PR #12] — 2026-06-01
+
 ## Session log
 Where I left off (rule 9), newest first.
+- **2026-06-01 (afternoon)** — Shipped TP-016 (tracker), TP-017 (local PR-review hook),
+  TP-018 (smiley), TP-019 (date tone-down + log union); documented all hooks/scripts in
+  `AUTOMATION.md` (TP-020) and backfilled this tracker (added DEVX/DOCS/FIX epics).
+  **Next:** FOCUS epic (TP-010); the current-week-completion open question still gates TP-014.
 - **2026-06-01** — Consolidated all task tracking into this file and retired `BACKLOG.md`
   (it had become the de-facto tracker, conflicting with rules 8–10). Shipped TP-007/008/009.
   **Next:** FOCUS epic, starting with TP-010; the current-week-completion open question is
@@ -160,3 +176,7 @@ Where I left off (rule 9), newest first.
 [PR #5]: https://github.com/adalagandev/task_puncher/pull/5
 [PR #6]: https://github.com/adalagandev/task_puncher/pull/6
 [PR #7]: https://github.com/adalagandev/task_puncher/pull/7
+[PR #9]: https://github.com/adalagandev/task_puncher/pull/9
+[PR #10]: https://github.com/adalagandev/task_puncher/pull/10
+[PR #11]: https://github.com/adalagandev/task_puncher/pull/11
+[PR #12]: https://github.com/adalagandev/task_puncher/pull/12
