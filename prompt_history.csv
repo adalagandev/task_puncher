@@ -89,3 +89,5 @@ AggregateError [ECONNREFUSED]:
 "2026-06-01T15:44:27.3989073+02:00","14307d4d-8c25-4ec9-bb0f-3f72ba199da7","Let's resume. Where am at?"
 "2026-06-01T15:44:48.8963953+02:00","14307d4d-8c25-4ec9-bb0f-3f72ba199da7","merge #16 and start TP-011"
 "2026-06-01T16:08:25.4416568+02:00","14307d4d-8c25-4ec9-bb0f-3f72ba199da7","merge #17 and start TP-012"
+"2026-06-01T16:23:02.9641941+02:00","14307d4d-8c25-4ec9-bb0f-3f72ba199da7","merge #18"
+"2026-06-01T16:26:31.4426217+02:00","14307d4d-8c25-4ec9-bb0f-3f72ba199da7","add to backlog. create a compact list of task at the bottom of the screen. kinda like horizontal rectangle in a vertical que. this list will only show 5 more task then a ""show more task"" clickable link that shows the next 10, then 15, then 20."
