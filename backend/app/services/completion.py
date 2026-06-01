@@ -19,6 +19,8 @@ def set_completed(task: Task, completed: bool) -> None:
         task.status = "completed"
         task.completed_at = datetime.now(timezone.utc)
     elif not completed and task.status == "completed":
+        # Reopen always returns to "active" by design; revisit if the status
+        # domain ever grows (e.g. "paused"/"blocked") and prior state must survive.
         task.status = "active"
         task.completed_at = None
 

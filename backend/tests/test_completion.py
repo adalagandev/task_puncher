@@ -47,6 +47,23 @@ def test_reopens_when_a_milestone_is_unchecked(client):
     assert after["completed_at"] is None
 
 
+def test_adding_milestone_reopens_completed_task(client):
+    # Complete all 5, then add a 6th (still within the 5–7 bound) — the fresh
+    # undone milestone should reopen the task.
+    task = _create_task(client, n_milestones=5)
+    for m in task["milestones"]:
+        _set_done(client, task["id"], m["id"], True)
+    assert client.get(f"/api/tasks/{task['id']}").json()["status"] == "completed"
+
+    client.post(
+        f"/api/tasks/{task['id']}/milestones",
+        json={"title": "extra", "relevance": "why", "order": 5},
+    )
+    after = client.get(f"/api/tasks/{task['id']}").json()
+    assert after["status"] == "active"
+    assert after["completed_at"] is None
+
+
 def test_manual_complete_and_reopen(client):
     task = _create_task(client)
     completed = client.post(f"/api/tasks/{task['id']}/complete").json()
