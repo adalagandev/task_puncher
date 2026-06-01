@@ -139,12 +139,16 @@ Decisions locked in (2026-06-01):
   - Files: `backend/app/models/task.py`, `backend/app/schemas/task.py` (bite-size)
 - ✅ **TP-011-FOCUS--complete-and-reopen** — new `services/completion.py` (`set_completed` idempotently stamps/clears `completed_at`; `sync_completion_from_milestones` makes completion follow milestone state) wired into `routes/milestones.py` (add/update/delete auto-complete + reopen); added `POST /tasks/{id}/complete` + `/reopen` in `routes/tasks.py`; `tests/test_completion.py` covers auto + manual paths. 20 tests pass. — 2026-06-01
   - Files: `backend/app/services/completion.py` (new), `backend/app/api/routes/milestones.py`, `backend/app/api/routes/tasks.py`, `backend/tests/test_completion.py` (new)
-- ⬜ **TP-012-FOCUS--top-3-active-list** — All Tasks page filters to `status !== "completed"`, keeps the score sort, slices to 3; adjust empty/heading copy. Depends on TP-010.
+- ✅ **TP-012-FOCUS--top-3-active-list** — dashboard now shows only the top 3 active (`status !== "completed"`) tasks by score (`focusTasks`); heading renamed "All Tasks" → **"This Week's Card"** with sub-copy "Your 3 to focus on"; empty state distinguishes no-tasks-yet from all-active-done. Depends on TP-010. — 2026-06-01
   - Files: `frontend/src/pages/TasksPage.tsx` (bite-size)
 - ⬜ **TP-013-FOCUS--completed-card-readonly** — when `status === "completed"`, mute the `TaskCard` (grayscale/opacity), disable milestone toggles + "Add to Week" + delete, swap in "Reopen"; add "Mark complete" on active cards. Depends on TP-011.
   - Files: `frontend/src/components/TaskCard.tsx`, `frontend/src/components/MilestoneList.tsx`, `frontend/src/hooks/useTasks.ts` (~3, bite-size)
 - ⬜ **TP-014-FOCUS--last-week-wins** — below the active 3, render completed tasks whose `completed_at` falls in the **current or previous calendar week (Mon–Sun)** in the browser timezone; hide older. Needs a local-time week-range helper. Depends on TP-010 + TP-012.
   - Files: `frontend/src/pages/TasksPage.tsx`, `frontend/src/lib/week.ts` (new) (~2, bite-size)
+
+## EPIC: FIX — regressions & maintenance (queued)
+- ⬜ **TP-022-FIX--weekly-count-excludes-completed** — completing a task doesn't clear `is_selected_this_week`, so a completed-but-still-selected task counts toward the 3-per-week cap while being hidden from the dashboard (`focusTasks`) — surfaced by the TP-018 PR review. Decide the product rule (does completing free the weekly slot?), then either clear the flag on completion in `services/completion.py` or have `weeklyCount`/the Week page ignore completed tasks.
+  - Files: likely `backend/app/services/completion.py` **or** `frontend/src/pages/TasksPage.tsx` + Week view (decide first) (bite-size)
 
 ## EPIC: DEVX — developer experience / tooling
 - ✅ **TP-017-DEVX--local-pr-review-hook** — auto-run the code-reviewer locally on every in-session `gh pr create` (a `PostToolUse` hook + `.claude/hooks/pr-review.ps1` → headless `claude -p` → `gh pr comment`); no Anthropic key in GitHub. Documented in `AUTOMATION.md`. — [PR #10] — 2026-06-01
