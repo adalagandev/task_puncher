@@ -30,8 +30,8 @@ export function TasksPage({ store }: { store: UseTasks }) {
             <h2 className="font-display text-4xl uppercase leading-none tracking-wide text-ink">
               All Tasks
             </h2>
-            {/* Loud gold badge sized to match the heading so the date is impossible to miss. */}
-            <span className="inline-block rounded-md border-2 border-ink bg-gold px-3 py-1 font-display text-4xl uppercase leading-none tracking-wide text-ink shadow-punch">
+            {/* Same display font/size/transform as the heading, just muted so it reads as a sibling not a banner. */}
+            <span className="font-display text-4xl uppercase leading-none tracking-wide text-ink/50">
               {today}
             </span>
           </div>
