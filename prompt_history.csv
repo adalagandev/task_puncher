@@ -70,3 +70,8 @@ AggregateError [ECONNREFUSED]:
 "2026-06-01T11:22:37.5858116+02:00","373c712a-5b96-4a06-80f4-66fc0026306a","Fix conflict in the current PR task_puncher/pull/8"
 "2026-06-01T11:34:14.9598426+02:00","373c712a-5b96-4a06-80f4-66fc0026306a","There are no PRs pending."
 "2026-06-01T11:37:25.3852944+02:00","373c712a-5b96-4a06-80f4-66fc0026306a","what's going on with PLAN.md and BACKLOG.md"
+"2026-06-01T11:44:19.5484845+02:00","373c712a-5b96-4a06-80f4-66fc0026306a","is my code-reviewer agent still runs?"
+"2026-06-01T11:47:32.4931216+02:00","373c712a-5b96-4a06-80f4-66fc0026306a","I want it to perform code reviews after a PR is created. LOCALLY. I do not want my Anthropic key in Github. Can we do that?"
+"2026-06-01T11:52:30.2582908+02:00","373c712a-5b96-4a06-80f4-66fc0026306a","So if I do a gh pr create in another terminal will my current code-reviewer agent trigger?"
+"2026-06-01T11:56:36.7532463+02:00","373c712a-5b96-4a06-80f4-66fc0026306a","hmmm. let's do this. a PR created via gh pr create during a Claude Code session."
+"2026-06-01T12:13:11.5619134+02:00","373c712a-5b96-4a06-80f4-66fc0026306a","let's test this code-reviewer agent. add a smile emoji before ""All Tasks"""

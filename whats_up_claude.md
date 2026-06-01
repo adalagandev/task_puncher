@@ -16,3 +16,4 @@ Read this before doing anything in this repo.
    completion timestamp.
 9. **Session end** — when I end a session, note in `PLAN.md` where I left off so
    I can continue next time.
+10. **Anthropic key** - NEVER EVER commit my Anthropic key or Claude keys remotely.
