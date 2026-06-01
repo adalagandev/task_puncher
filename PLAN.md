@@ -149,11 +149,12 @@ Decisions locked in (2026-06-01):
 
 ## EPIC: DEVX — developer experience / tooling
 - ✅ **TP-017-DEVX--local-pr-review-hook** — auto-run the code-reviewer locally on every in-session `gh pr create` (a `PostToolUse` hook + `.claude/hooks/pr-review.ps1` → headless `claude -p` → `gh pr comment`); no Anthropic key in GitHub. Documented in `AUTOMATION.md`. — [PR #10] — 2026-06-01
+  - ⚠️ **Lost in merge:** PR #10's merge commit was orphaned (main went #9→#11→#12, bypassing #10), so the hook never reached `main`. Re-landed via TP-020 (PR #13).
 
 ## EPIC: DOCS — documentation & process
 - ✅ **TP-016-DOCS--plan-task-tracker** — made PLAN.md the single task tracker (rules 8–10) and retired `BACKLOG.md`. — [PR #9] — 2026-06-01
-- 🔫 **TP-020-DOCS--automation-doc** — document every hook/script/agent in `AUTOMATION.md`; backfill the merged TP-016/017/018/019 tickets into this tracker.
-  - Files: `AUTOMATION.md` (new), `PLAN.md` (bite-size)
+- 🔫 **TP-020-DOCS--automation-doc** — document every hook/script/agent in `AUTOMATION.md`; backfill the merged TP-016/017/018/019 tickets into this tracker; **also restore the orphaned TP-017 hook** (`pr-review.ps1`, the `PostToolUse` wiring, and the `.gitignore` log entry) that #10's lost merge dropped.
+  - Files: `AUTOMATION.md` (new), `PLAN.md`, `.claude/hooks/pr-review.ps1` (restored), `.claude/settings.json`, `.gitignore` (big bite, 5 — restore + docs are coupled)
 
 ## EPIC: FIX — regressions & maintenance
 - ✅ **TP-019-FIX--date-tonedown-and-prompt-log-union** — re-applied the lost toned-down date stamp (commit `8b7a1d6` never reached main) and marked `prompt_history.csv` `merge=union` to stop the recurring log conflicts. — [PR #12] — 2026-06-01
@@ -163,7 +164,9 @@ Where I left off (rule 9), newest first.
 - **2026-06-01 (afternoon)** — Shipped TP-016 (tracker), TP-017 (local PR-review hook),
   TP-018 (smiley), TP-019 (date tone-down + log union); documented all hooks/scripts in
   `AUTOMATION.md` (TP-020) and backfilled this tracker (added DEVX/DOCS/FIX epics).
-  **Next:** FOCUS epic (TP-010); the current-week-completion open question still gates TP-014.
+  **Caught a regression:** PR #10's merge was orphaned, so the PR-review hook never reached
+  `main`; TP-020/PR #13 restores it. **Next:** FOCUS epic (TP-010); the current-week-completion
+  open question still gates TP-014.
 - **2026-06-01** — Consolidated all task tracking into this file and retired `BACKLOG.md`
   (it had become the de-facto tracker, conflicting with rules 8–10). Shipped TP-007/008/009.
   **Next:** FOCUS epic, starting with TP-010; the current-week-completion open question is
