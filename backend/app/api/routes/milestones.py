@@ -9,6 +9,7 @@ from app.models.milestone import Milestone
 from app.models.task import Task
 from app.models.user import User
 from app.schemas.milestone import MilestoneCreate, MilestoneOut, MilestoneUpdate
+from app.services.completion import sync_completion_from_milestones
 
 router = APIRouter(prefix="/api/tasks/{task_id}/milestones", tags=["milestones"])
 
@@ -45,10 +46,11 @@ def add_milestone(
             detail=f"A task can have at most {settings.max_milestones} milestones.",
         )
     order = payload.order or len(task.milestones)
-    milestone = Milestone(
-        task_id=task.id, order=order, title=payload.title, relevance=payload.relevance
-    )
-    db.add(milestone)
+    milestone = Milestone(order=order, title=payload.title, relevance=payload.relevance)
+    # Append via the relationship so task.milestones is current for the sync below
+    # (a fresh undone milestone reopens a previously completed task).
+    task.milestones.append(milestone)
+    sync_completion_from_milestones(task)
     db.commit()
     db.refresh(milestone)
     return milestone
@@ -66,6 +68,8 @@ def update_milestone(
     milestone = _get_milestone(db, task, milestone_id)
     for field, value in payload.model_dump(exclude_unset=True).items():
         setattr(milestone, field, value)
+    # Toggling done may have checked the last milestone (complete) or unchecked one (reopen).
+    sync_completion_from_milestones(task)
     db.commit()
     db.refresh(milestone)
     return milestone
@@ -85,5 +89,8 @@ def delete_milestone(
             detail=f"A task must keep at least {settings.min_milestones} milestones.",
         )
     milestone = _get_milestone(db, task, milestone_id)
-    db.delete(milestone)
+    # Remove via the relationship (cascade delete-orphan) so task.milestones is current;
+    # dropping an unfinished milestone can leave the rest all-done and complete the task.
+    task.milestones.remove(milestone)
+    sync_completion_from_milestones(task)
     db.commit()
