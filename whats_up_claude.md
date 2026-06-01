@@ -18,4 +18,4 @@ Read this before doing anything in this repo.
    I can continue next time.
 10. **Anthropic key** - NEVER EVER commit my Anthropic key or Claude keys remotely.
 11. **Pending Pull Requests** - Pull pending pull request at start of claude session.
-12. **Prompt audit** if number for prompt records hit 100, 
+12. **Prompt audit** if number for prompt records hit 100, create a new prompt_history_<incremental_number>.csv

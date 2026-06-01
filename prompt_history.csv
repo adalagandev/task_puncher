@@ -84,3 +84,4 @@ AggregateError [ECONNREFUSED]:
 "2026-06-01T14:06:24.2598090+02:00","373c712a-5b96-4a06-80f4-66fc0026306a","since we started this project we created a bunch of hooks and scripts so far. document them in an md file, name it as approppriately."
 "2026-06-01T14:36:47.6810517+02:00","373c712a-5b96-4a06-80f4-66fc0026306a","merge #13 then restart the session"
 "2026-06-01T14:43:41.3376432+02:00","373c712a-5b96-4a06-80f4-66fc0026306a","end this session"
+"2026-06-01T14:49:27.0521540+02:00","14307d4d-8c25-4ec9-bb0f-3f72ba199da7","READ whats_up_claude"
