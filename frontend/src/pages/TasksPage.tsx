@@ -123,7 +123,9 @@ export function TasksPage({ store }: { store: UseTasks }) {
       )}
 
       {/* Backlog queue: active tasks beyond the focus 3, slim rows, above the wins shelf. */}
-      {!store.loading && backlog.length > 0 && <BacklogList tasks={backlog} />}
+      {!store.loading && backlog.length > 0 && (
+        <BacklogList tasks={backlog} rankOffset={focusTasks.length + 1} />
+      )}
 
       {/* Recent wins: read-only trophy cards for this/last week's completions. */}
       {!store.loading && wins.length > 0 && (
