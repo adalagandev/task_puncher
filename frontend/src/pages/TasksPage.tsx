@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { BacklogList } from "../components/BacklogList";
 import { TaskCard } from "../components/TaskCard";
 import { TaskForm } from "../components/TaskForm";
 import type { UseTasks } from "../hooks/useTasks";
@@ -13,6 +14,13 @@ export function TasksPage({ store }: { store: UseTasks }) {
   // top 3 by score. store.tasks already arrives sorted by priority_score from the API.
   const focusTasks = useMemo(
     () => store.tasks.filter((t) => t.status !== "completed").slice(0, 3),
+    [store.tasks],
+  );
+
+  // Backlog: the active tasks beyond the focus 3 (ranks 4+), same priority order.
+  // Rendered as a slim read-only queue below the card (TP-023).
+  const backlog = useMemo(
+    () => store.tasks.filter((t) => t.status !== "completed").slice(3),
     [store.tasks],
   );
 
@@ -113,6 +121,9 @@ export function TasksPage({ store }: { store: UseTasks }) {
           ))}
         </div>
       )}
+
+      {/* Backlog queue: active tasks beyond the focus 3, slim rows, above the wins shelf. */}
+      {!store.loading && backlog.length > 0 && <BacklogList tasks={backlog} />}
 
       {/* Recent wins: read-only trophy cards for this/last week's completions. */}
       {!store.loading && wins.length > 0 && (
