@@ -151,11 +151,11 @@ Decisions locked in (2026-06-01):
   - Open questions to resolve at build time: (a) **which tasks** — active-only, ranks 4+ (assumed), excluding completed (those live in the TP-014 wins section); (b) **placement** relative to the TP-014 wins section (above or below); (c) **row content** — title + score, and whether to show milestone progress; (d) is a row clickable (expand/scroll to a full card) or read-only.
   - Files: `frontend/src/pages/TasksPage.tsx` + new `frontend/src/components/BacklogList.tsx` (~2, bite-size)
 
-## EPIC: FIX — regressions & maintenance (queued)
+## EPIC: FIX — regressions & maintenance
 - ✅ **TP-022-FIX--weekly-count-excludes-completed** — **Product rule: completing a task frees its weekly slot.** `set_completed` now clears `is_selected_this_week`/`selected_at` on the active→completed transition, so a done task stops counting toward the 3-cap (covers both manual complete and milestone auto-complete; reopen leaves it deselected). Backend-only fix — the frontend `weeklyCount`/Week view already key off the same flag, so they self-correct on refresh. Added 3 tests (manual + auto-complete free the slot; completing one lets a 4th fit). — 2026-06-06
   - Files: `backend/app/services/completion.py`, `backend/tests/test_completion.py` (bite-size)
-- ⬜ **TP-025-FIX--naive-utc-timestamps** — `completed_at`/`selected_at` serialize **without a timezone** (e.g. `2026-06-01T15:47:49.256161`, no `Z`/offset) because SQLite+SQLAlchemy stores naive despite `DateTime(timezone=True)` + the tz-aware-UTC convention. The frontend's `new Date(iso)` then parses them as **local**, so `lib/week.ts` buckets a UTC instant by local wall-clock — up to a TZ-offset of skew at the Mon-00:00 week boundary. Found during the TP-014 live verification. Fix at serialization (append `Z` / store tz-aware) or normalize on the client. Pre-existing pattern.
-  - Files: likely `backend/app/schemas/task.py` (serializer) or a client-side parse helper (bite-size)
+- ✅ **TP-025-FIX--naive-utc-timestamps** — fixed at serialization: a `field_serializer` on `TaskOut` (`completed_at`/`selected_at`/`created_at`/`updated_at`) stamps naive values as UTC and emits offset-bearing ISO, so the client's `new Date(iso)` parses the correct instant and `lib/week.ts` buckets correctly. Backend-only (frontend already does `new Date(iso)`); added a test asserting the timestamps serialize tz-aware. 25 tests pass. — 2026-06-06
+  - Files: `backend/app/schemas/task.py`, `backend/tests/test_completion.py` (bite-size)
 
 ## EPIC: DEVX — developer experience / tooling
 - ✅ **TP-017-DEVX--local-pr-review-hook** — auto-run the code-reviewer locally on every in-session `gh pr create` (a `PostToolUse` hook + `.claude/hooks/pr-review.ps1` → headless `claude -p` → `gh pr comment`); no Anthropic key in GitHub. Documented in `AUTOMATION.md`. — [PR #10] — 2026-06-01
@@ -173,11 +173,12 @@ Decisions locked in (2026-06-01):
 Where I left off (rule 9), newest first.
 - **2026-06-06** — Rolled the prompt log over to `prompt_history_2.csv` (rule 12; the old
   file crossed 100 records). Shipped **TP-022-FIX** (completing a task now frees its weekly
-  slot — `set_completed` clears `is_selected_this_week`; backend-only, 24 tests pass). Working
-  on branch `TP-022-FIX--weekly-count-excludes-completed`. **Next:** TP-025 (naive UTC
-  timestamps), TP-023 (backlog queue — resolve open questions first), then UX bites TP-005 /
-  TP-006 / TP-015. **Note:** the prompt-logging hook still writes to `prompt_history.csv`;
-  point it at `prompt_history_2.csv` to honor the rollover.
+  slot — `set_completed` clears `is_selected_this_week`; backend-only, merged as **PR #24**,
+  ancestry-verified). Then shipped **TP-025-FIX** (timestamps now serialize tz-aware UTC via a
+  `TaskOut` `field_serializer`, fixing the client week-bucketing skew). **Next:** TP-023
+  (backlog queue — resolve open questions first), then UX bites TP-005 / TP-006 / TP-015.
+  **Note:** the prompt-logging hook still writes to `prompt_history.csv`; point it at
+  `prompt_history_2.csv` to honor the rollover.
 - **2026-06-01 (evening, session end)** — **Shipped the entire FOCUS epic** (TP-010→014):
   `completed_at` column (#16), auto/manual complete+reopen (#17), top-3 "This Week's Card"
   dashboard (#18), read-only completed cards + Mark Complete/Reopen buttons (#20), and the
