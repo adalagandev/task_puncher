@@ -18,6 +18,11 @@ def set_completed(task: Task, completed: bool) -> None:
     if completed and task.status != "completed":
         task.status = "completed"
         task.completed_at = datetime.now(timezone.utc)
+        # Completing frees the weekly slot: a done task is hidden from the focus
+        # view, so it must not keep counting toward the 3-per-week cap (TP-022).
+        # Reopen leaves it deselected — the slot may since be taken; user re-adds.
+        task.is_selected_this_week = False
+        task.selected_at = None
     elif not completed and task.status == "completed":
         # Reopen always returns to "active" by design; revisit if the status
         # domain ever grows (e.g. "paused"/"blocked") and prior state must survive.
