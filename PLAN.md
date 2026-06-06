@@ -171,14 +171,17 @@ Decisions locked in (2026-06-01):
 
 ## Session log
 Where I left off (rule 9), newest first.
-- **2026-06-06** — Rolled the prompt log over to `prompt_history_2.csv` (rule 12; the old
-  file crossed 100 records). Shipped **TP-022-FIX** (completing a task now frees its weekly
-  slot — `set_completed` clears `is_selected_this_week`; backend-only, merged as **PR #24**,
-  ancestry-verified). Then shipped **TP-025-FIX** (timestamps now serialize tz-aware UTC via a
-  `TaskOut` `field_serializer`, fixing the client week-bucketing skew). **Next:** TP-023
-  (backlog queue — resolve open questions first), then UX bites TP-005 / TP-006 / TP-015.
-  **Note:** the prompt-logging hook still writes to `prompt_history.csv`; point it at
-  `prompt_history_2.csv` to honor the rollover.
+- **2026-06-06 (session end)** — Cleared the **FIX epic**: shipped **TP-022-FIX** (completing
+  a task now frees its weekly slot — `set_completed` clears `is_selected_this_week`; **PR #24**)
+  and **TP-025-FIX** (timestamps serialize tz-aware UTC via a `TaskOut` `field_serializer`,
+  fixing the client week-bucketing skew; **PR #25**). Both backend-only, 25 tests pass, each
+  auto-reviewed by the local hook (acted on its findings), **merged + ancestry-verified, 0 open
+  PRs**. Also rolled the prompt log to `prompt_history_2.csv` (rule 12; old file crossed 100).
+  **Next session:** TP-023 (backlog queue — resolve its open questions first), then the UX
+  bites TP-005 (milestone label toggle), TP-006 (backend-unreachable state), TP-015 (New Task
+  form restyle). **Heads-up:** the prompt-logging hook still writes to `prompt_history.csv` —
+  point it at `prompt_history_2.csv` to honor the rollover (I created the file but didn't
+  rewire the hook).
 - **2026-06-01 (evening, session end)** — **Shipped the entire FOCUS epic** (TP-010→014):
   `completed_at` column (#16), auto/manual complete+reopen (#17), top-3 "This Week's Card"
   dashboard (#18), read-only completed cards + Mark Complete/Reopen buttons (#20), and the
