@@ -82,3 +82,7 @@ with a human-readable `detail` on the backend and it renders correctly in the UI
   fully populated; `init_db()` relies on this.
 - This is a Windows repo — prefer PowerShell syntax in instructions and use
   `.venv\Scripts\...` paths.
+
+
+## At the start of each session
+- read whats_up_claude.md when finish tell the user
