@@ -27,8 +27,9 @@ export function MilestoneList({ task, onToggle, readOnly = false }: Props) {
             onChange={readOnly ? undefined : (e) => onToggle(m.id, e.target.checked)}
           />
           <div className="min-w-0">
-            {/* The title is the checkbox's label, so clicking the text toggles done too.
-                A <label> won't fire for a disabled input, so read-only stays locked. */}
+            {/* The title doubles as the checkbox's label, so clicking the text toggles
+                done too. When readOnly the checkbox is disabled, so the label click is a
+                no-op (and the controlled checked={m.done} binding would ignore it anyway). */}
             <label
               htmlFor={`milestone-${m.id}`}
               className={`block text-sm font-semibold ${readOnly ? "" : "cursor-pointer"} ${
