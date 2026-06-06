@@ -107,6 +107,24 @@ def test_milestone_autocomplete_frees_the_weekly_slot(client):
     assert len(client.get("/api/weekly").json()) == 0
 
 
+def test_timestamps_serialize_tz_aware_utc(client):
+    # TP-025: completed_at/selected_at/created_at must carry an explicit UTC
+    # offset, else the client parses the UTC instant as local time and mis-buckets
+    # it by the TZ offset at the week boundary.
+    task = _create_task(client)
+    client.put(f"/api/weekly/{task['id']}", json={"selected": True})
+    selected = client.get(f"/api/tasks/{task['id']}").json()
+    completed = client.post(f"/api/tasks/{task['id']}/complete").json()
+
+    def _is_tz_aware(iso: str) -> bool:
+        from datetime import datetime as _dt
+        return _dt.fromisoformat(iso).tzinfo is not None
+
+    assert _is_tz_aware(selected["created_at"])
+    assert _is_tz_aware(selected["selected_at"])
+    assert _is_tz_aware(completed["completed_at"])
+
+
 def test_completing_a_selection_lets_a_fourth_task_fit(client):
     # The end-to-end fix: three selected, complete one, and a fourth now fits.
     ids = [_create_task(client)["id"] for _ in range(4)]
