@@ -177,7 +177,8 @@ Where I left off (rule 9), newest first.
   on branch `TP-022-FIX--weekly-count-excludes-completed`. **Next:** TP-025 (naive UTC
   timestamps), TP-023 (backlog queue — resolve open questions first), then UX bites TP-005 /
   TP-006 / TP-015. **Note:** the prompt-logging hook still writes to `prompt_history.csv`;
-  point it at `prompt_history_2.csv` to honor the rollover. **Shipped the entire FOCUS epic** (TP-010→014):
+  point it at `prompt_history_2.csv` to honor the rollover.
+- **2026-06-01 (evening, session end)** — **Shipped the entire FOCUS epic** (TP-010→014):
   `completed_at` column (#16), auto/manual complete+reopen (#17), top-3 "This Week's Card"
   dashboard (#18), read-only completed cards + Mark Complete/Reopen buttons (#20), and the
   "🏆 Recent Wins" trophy shelf (#21). Resolved the gating open question: **current-week
