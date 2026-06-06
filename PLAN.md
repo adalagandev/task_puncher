@@ -159,6 +159,8 @@ Decisions locked in (2026-06-01):
 ## EPIC: DEVX — developer experience / tooling
 - ✅ **TP-017-DEVX--local-pr-review-hook** — auto-run the code-reviewer locally on every in-session `gh pr create` (a `PostToolUse` hook + `.claude/hooks/pr-review.ps1` → headless `claude -p` → `gh pr comment`); no Anthropic key in GitHub. Documented in `AUTOMATION.md`. — [PR #10] — 2026-06-01
   - ⚠️ **Lost in merge:** PR #10's merge commit was orphaned (main went #9→#11→#12, bypassing #10), so the hook never reached `main`. Re-landed via TP-020 (PR #13).
+- ✅ **TP-026-DEVX--prompt-log-autoroll** — made the `capture-prompt.ps1` logging hook self-rolling for rule 12: it now writes to the highest-numbered `prompt_history*.csv` and rolls to the next index once the active file hits 100 records (records counted by leading-timestamp match, so embedded newlines don't inflate the count). Fixes the loose end where the hook kept appending to the 100+-record `prompt_history.csv`; new prompts now land in `prompt_history_2.csv` automatically. Verified by feeding a test payload (landed in `_2`, quote/newline-escaped). — 2026-06-06
+  - Files: `.claude/hooks/capture-prompt.ps1` (bite-size)
 
 ## EPIC: DOCS — documentation & process
 - ✅ **TP-016-DOCS--plan-task-tracker** — made PLAN.md the single task tracker (rules 8–10) and retired `BACKLOG.md`. — [PR #9] — 2026-06-01
