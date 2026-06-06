@@ -49,7 +49,7 @@ export function TaskForm({ onSubmit, onCancel }: Props) {
     if (ok) onCancel();
   };
 
-  // Shared field/label styling so the form reads as one fight-card surface.
+  // Reused so the form reads as one consistent fight-card surface.
   const fieldClass =
     "mt-1 w-full rounded-md border-2 border-ink/20 bg-bone px-3 py-2 text-sm font-medium text-ink placeholder:text-ink/30 transition focus:border-ink focus:outline-none";
   const labelClass = "text-[11px] font-bold uppercase tracking-wider text-ink/60";
