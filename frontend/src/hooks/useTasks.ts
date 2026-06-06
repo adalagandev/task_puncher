@@ -31,7 +31,10 @@ export function useTasks(): UseTasks {
   const run = useCallback(async (fn: () => Promise<unknown>) => {
     try {
       await fn();
-      setUnreachable(false); // a successful call proves the server is back
+      // A successful call proves the server is back; also drop any stale error so a
+      // mutation that doesn't trail with refresh() still clears the banner.
+      setUnreachable(false);
+      setError(null);
     } catch (e) {
       if (e instanceof NetworkError) setUnreachable(true);
       else setError(e instanceof ApiError ? e.message : "Something went wrong");
