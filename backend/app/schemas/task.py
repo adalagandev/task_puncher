@@ -1,7 +1,7 @@
 """Pydantic schemas for tasks, including the 5–7 milestone rule on creation."""
-from datetime import datetime
+from datetime import datetime, timezone
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_serializer, field_validator
 
 from app.core.config import settings
 from app.schemas.milestone import MilestoneCreate, MilestoneOut
@@ -52,3 +52,15 @@ class TaskOut(BaseModel):
     created_at: datetime
     updated_at: datetime
     milestones: list[MilestoneOut]
+
+    @field_serializer("completed_at", "selected_at", "created_at", "updated_at")
+    def _serialize_utc(self, value: datetime | None) -> str | None:
+        # SQLite stores our tz-aware-UTC datetimes as naive, so they'd serialize
+        # without an offset and the client's `new Date()` would read them as local
+        # — skewing week-bucketing by the TZ offset (TP-025). Stamp naive values as
+        # UTC so the wire always carries an explicit offset.
+        if value is None:
+            return None
+        if value.tzinfo is None:
+            value = value.replace(tzinfo=timezone.utc)
+        return value.isoformat()
