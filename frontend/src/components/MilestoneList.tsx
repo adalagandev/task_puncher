@@ -17,6 +17,7 @@ export function MilestoneList({ task, onToggle, readOnly = false }: Props) {
             {String(i + 1).padStart(2, "0")}
           </span>
           <input
+            id={`milestone-${m.id}`}
             type="checkbox"
             className={`mt-0.5 h-4 w-4 shrink-0 accent-knockout ${
               readOnly ? "cursor-not-allowed" : ""
@@ -26,13 +27,16 @@ export function MilestoneList({ task, onToggle, readOnly = false }: Props) {
             onChange={readOnly ? undefined : (e) => onToggle(m.id, e.target.checked)}
           />
           <div className="min-w-0">
-            <p
-              className={`text-sm font-semibold ${
+            {/* The title is the checkbox's label, so clicking the text toggles done too.
+                A <label> won't fire for a disabled input, so read-only stays locked. */}
+            <label
+              htmlFor={`milestone-${m.id}`}
+              className={`block text-sm font-semibold ${readOnly ? "" : "cursor-pointer"} ${
                 m.done ? "text-ink/35 line-through" : "text-ink"
               }`}
             >
               {m.title}
-            </p>
+            </label>
             {m.relevance && (
               <p className="text-xs text-ink/55">
                 <span className="font-bold uppercase tracking-wide text-ink/40">Why:</span>{" "}
