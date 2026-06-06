@@ -155,6 +155,8 @@ Decisions locked in (2026-06-01):
   - Files: `backend/app/services/completion.py`, `backend/tests/test_completion.py` (bite-size)
 - ✅ **TP-025-FIX--naive-utc-timestamps** — fixed at serialization: a `field_serializer` on `TaskOut` (`completed_at`/`selected_at`/`created_at`/`updated_at`) stamps naive values as UTC and emits offset-bearing ISO, so the client's `new Date(iso)` parses the correct instant and `lib/week.ts` buckets correctly. Backend-only (frontend already does `new Date(iso)`); added a test asserting the timestamps serialize tz-aware. 25 tests pass. — 2026-06-06
   - Files: `backend/app/schemas/task.py`, `backend/tests/test_completion.py` (bite-size)
+- ⬜ **TP-027-FIX--vite-proxy-ipv4** — set the Vite dev proxy target from `http://localhost:8000` to `http://127.0.0.1:8000` in `frontend/vite.config.ts`. **Why:** found during the 2026-06-06 live verification — on Node 24 the proxy resolves `localhost` to IPv6 `::1` first, but uvicorn binds IPv4 `127.0.0.1` only, so the proxy intermittently fails (`ECONNREFUSED`/`ETIMEDOUT`) and the app shows TP-006's "can't reach the server" panel **even when the backend is up** (`curl 127.0.0.1:8000` worked fine throughout). Pinning IPv4 on both ends removes the ambiguity. Optionally also bind the backend `--host 127.0.0.1` explicitly in `dev.ps1`.
+  - Files: `frontend/vite.config.ts` (+ maybe `dev.ps1`) (bite-size)
 
 ## EPIC: DEVX — developer experience / tooling
 - ✅ **TP-017-DEVX--local-pr-review-hook** — auto-run the code-reviewer locally on every in-session `gh pr create` (a `PostToolUse` hook + `.claude/hooks/pr-review.ps1` → headless `claude -p` → `gh pr comment`); no Anthropic key in GitHub. Documented in `AUTOMATION.md`. — [PR #10] — 2026-06-01
@@ -172,6 +174,22 @@ Decisions locked in (2026-06-01):
 
 ## Session log
 Where I left off (rule 9), newest first.
+- **2026-06-07 (session end)** — Cleared the two carried loose ends. **Shipped TP-026-DEVX**
+  (#32): the `capture-prompt.ps1` hook is now self-rolling — it writes to the highest-numbered
+  `prompt_history*.csv` and rolls at 100 records, so rule 12 is automatic (verified: this
+  session's prompts now land in `prompt_history_2.csv`). **Live-verified the two built-but-unrun
+  UI changes** by driving headless Edge over the DevTools Protocol (no Playwright; Node 24
+  global WebSocket/fetch): **TP-006 ✅** — with the backend down, the app shows the 🔌 "Can't
+  reach the server" panel + Retry and suppresses the red banner (screenshot captured); **TP-015
+  ✅** — clicking "+ New Task" opens the restyled form ("Step Into the Ring" eyebrow, display
+  "New Task" heading, Create Task button, Priority Preview chip) with computed styles `2px` /
+  `rgb(23,18,15)` ink border / `rgb(251,245,232)` canvas bg (the fight-night tokens, not the old
+  slate/white). **Finding → ticketed TP-027-FIX:** Vite's proxy target `localhost:8000` + Node
+  24's IPv6-first resolution vs uvicorn's IPv4-only bind makes the dev proxy intermittently
+  unreachable even when the backend is up (`curl 127.0.0.1:8000` always worked) — pin the proxy
+  to `127.0.0.1`. TP-006's Retry-recovery wasn't cleanly captured because of that flapping, but
+  the app did load real data once the proxy connected (so the recover path renders). **Next
+  session:** TP-027 (quick proxy-IPv4 fix), else no queued feature work — pick new scope.
 - **2026-06-06 (evening, session end)** — **Cleared the entire queued backlog** — 0 ⬜ tasks
   left in the tracker. Shipped six tickets, each auto-reviewed by the local hook (findings
   acted on), merged + ancestry-verified, branches pruned, **0 open PRs**: **TP-022-FIX** (#24,
