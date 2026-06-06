@@ -52,8 +52,9 @@ export default function App() {
         </div>
       </header>
 
-      {store.error && (
+      {store.error && !store.unreachable && (
         // Knockout-red banner so API errors are impossible to miss; keeps clearError logic.
+        // Suppressed when unreachable — that gets its own full panel below.
         <div className="mx-auto mt-4 max-w-5xl px-4">
           <div className="flex items-center justify-between gap-3 rounded-md border-2 border-ink bg-knockout px-4 py-3 text-sm font-semibold text-white shadow-punch-sm">
             <span>
@@ -71,7 +72,35 @@ export default function App() {
       )}
 
       <main className="mx-auto max-w-5xl px-4 py-8">
-        {tab === "tasks" ? <TasksPage store={store} /> : <WeekPage store={store} />}
+        {store.unreachable ? (
+          // Friendly stand-in when the API is down: name the likely cause and offer
+          // a Retry, instead of leaking the raw Vite proxy 5xx into the error banner.
+          <div className="rounded-lg border-2 border-dashed border-ink/30 bg-canvas/50 py-16 text-center">
+            <p className="text-4xl" aria-hidden>
+              🔌
+            </p>
+            <p className="mt-2 font-display text-2xl uppercase tracking-wide text-ink">
+              Can&apos;t reach the server
+            </p>
+            <p className="mx-auto mt-1 max-w-md text-sm font-medium text-ink/60">
+              The API isn&apos;t responding. Is the backend running on{" "}
+              <code className="font-mono text-ink/80">:8000</code>? Start it with{" "}
+              <code className="font-mono text-ink/80">uvicorn app.main:app --reload</code> (or{" "}
+              <code className="font-mono text-ink/80">.\dev.ps1</code>), then retry.
+            </p>
+            <button
+              onClick={store.refresh}
+              disabled={store.loading}
+              className="mt-5 rounded-md border-2 border-ink bg-knockout px-5 py-2.5 text-sm font-extrabold uppercase tracking-wide text-white shadow-punch transition hover:-translate-y-0.5 active:translate-y-0 active:shadow-punch-sm disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {store.loading ? "Retrying…" : "Retry"}
+            </button>
+          </div>
+        ) : tab === "tasks" ? (
+          <TasksPage store={store} />
+        ) : (
+          <WeekPage store={store} />
+        )}
       </main>
     </div>
   );
