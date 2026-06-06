@@ -81,3 +81,38 @@ def test_completed_at_stable_across_redundant_completes(client):
     second = client.post(f"/api/tasks/{task['id']}/complete").json()
     # Idempotent: a second complete must not move the timestamp.
     assert first["completed_at"] == second["completed_at"]
+
+
+def test_manual_complete_frees_the_weekly_slot(client):
+    # A selected task that completes must drop its weekly selection (TP-022):
+    # otherwise it counts toward the 3-cap while hidden from the focus view.
+    task = _create_task(client)
+    client.put(f"/api/weekly/{task['id']}", json={"selected": True})
+    completed = client.post(f"/api/tasks/{task['id']}/complete").json()
+    assert completed["is_selected_this_week"] is False
+    assert completed["selected_at"] is None
+    assert len(client.get("/api/weekly").json()) == 0
+
+
+def test_milestone_autocomplete_frees_the_weekly_slot(client):
+    # Same rule via the auto-complete path: checking the last milestone completes
+    # the task and must release its weekly slot.
+    task = _create_task(client)
+    client.put(f"/api/weekly/{task['id']}", json={"selected": True})
+    for m in task["milestones"]:
+        _set_done(client, task["id"], m["id"], True)
+    after = client.get(f"/api/tasks/{task['id']}").json()
+    assert after["status"] == "completed"
+    assert after["is_selected_this_week"] is False
+    assert len(client.get("/api/weekly").json()) == 0
+
+
+def test_completing_a_selection_lets_a_fourth_task_fit(client):
+    # The end-to-end fix: three selected, complete one, and a fourth now fits.
+    ids = [_create_task(client)["id"] for _ in range(4)]
+    for tid in ids[:3]:
+        client.put(f"/api/weekly/{tid}", json={"selected": True})
+    client.post(f"/api/tasks/{ids[0]}/complete")
+    assert client.put(f"/api/weekly/{ids[3]}", json={"selected": True}).status_code == 200
+    # The weekly list settles at exactly 3 (two survivors + the new pick), not 4.
+    assert len(client.get("/api/weekly").json()) == 3

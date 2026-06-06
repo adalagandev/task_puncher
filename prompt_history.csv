@@ -96,3 +96,8 @@ AggregateError [ECONNREFUSED]:
 "2026-06-01T18:01:10.5270694+02:00","14307d4d-8c25-4ec9-bb0f-3f72ba199da7","do I just run dev.ps1?"
 "2026-06-01T18:04:14.6650799+02:00","14307d4d-8c25-4ec9-bb0f-3f72ba199da7","I need more mock test data. Create about 10 more"
 "2026-06-01T18:19:06.1893283+02:00","14307d4d-8c25-4ec9-bb0f-3f72ba199da7","I merged it in git hub. Update the branches. I'm ending this session for today."
+"2026-06-01T22:56:46.4349447+02:00","b4f2ce8b-da3e-476b-b349-a75c291460ae","read whats_up_claude"
+"2026-06-02T11:24:24.3473430+02:00","47969345-a4c5-4a93-a813-61c2ccdcc515","read whats_up_claude"
+"2026-06-03T09:55:12.5143611+02:00","47969345-a4c5-4a93-a813-61c2ccdcc515","end session."
+"2026-06-06T20:07:36.0449311+02:00","c73d3f76-04c2-4c3f-8373-273c5c3ee6b2","read what_up_claude"
+"2026-06-06T20:18:07.4283245+02:00","c73d3f76-04c2-4c3f-8373-273c5c3ee6b2","Let's work on the remaining task in PLAN.md start with the most important. Go. Keep working on it. Until it is done. EXCEPT if when I hit my token limit"
