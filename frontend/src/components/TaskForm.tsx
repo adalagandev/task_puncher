@@ -49,17 +49,27 @@ export function TaskForm({ onSubmit, onCancel }: Props) {
     if (ok) onCancel();
   };
 
+  // Shared field/label styling so the form reads as one fight-card surface.
+  const fieldClass =
+    "mt-1 w-full rounded-md border-2 border-ink/20 bg-bone px-3 py-2 text-sm font-medium text-ink placeholder:text-ink/30 transition focus:border-ink focus:outline-none";
+  const labelClass = "text-[11px] font-bold uppercase tracking-wider text-ink/60";
+
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-4 rounded-lg border border-slate-200 bg-white p-5 shadow-sm"
+      className="space-y-5 rounded-lg border-2 border-ink bg-canvas p-5 shadow-punch"
     >
-      <h2 className="text-lg font-semibold text-slate-900">New task</h2>
+      <div>
+        <p className="eyebrow text-knockout">Step Into the Ring</p>
+        <h2 className="font-display text-2xl uppercase leading-none tracking-wide text-ink">
+          New Task
+        </h2>
+      </div>
 
       <label className="block">
-        <span className="text-sm font-medium text-slate-700">Title</span>
+        <span className={labelClass}>Title</span>
         <input
-          className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none"
+          className={fieldClass}
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="e.g. Ship the onboarding flow"
@@ -67,9 +77,9 @@ export function TaskForm({ onSubmit, onCancel }: Props) {
       </label>
 
       <label className="block">
-        <span className="text-sm font-medium text-slate-700">Description</span>
+        <span className={labelClass}>Description</span>
         <textarea
-          className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none"
+          className={fieldClass}
           rows={2}
           value={description}
           onChange={(e) => setDescription(e.target.value)}
@@ -85,28 +95,31 @@ export function TaskForm({ onSubmit, onCancel }: Props) {
 
       <div>
         <div className="flex items-center justify-between">
-          <span className="text-sm font-medium text-slate-700">
+          <span className={labelClass}>
             Milestones ({milestones.length}/{MILESTONE_MAX})
           </span>
           <button
             type="button"
             onClick={addMilestone}
             disabled={milestones.length >= MILESTONE_MAX}
-            className="text-sm font-medium text-indigo-600 hover:text-indigo-700 disabled:opacity-40"
+            className="text-xs font-extrabold uppercase tracking-wide text-knockout transition hover:text-ink disabled:opacity-40 disabled:hover:text-knockout"
           >
-            + Add milestone
+            + Add Milestone
           </button>
         </div>
-        <p className="mb-2 text-xs text-slate-400">
+        <p className="mb-2 mt-1 text-xs font-medium text-ink/50">
           Each task needs {MILESTONE_MIN}–{MILESTONE_MAX} milestones. Explain why each matters.
         </p>
         <div className="space-y-2">
           {milestones.map((m, i) => (
-            <div key={i} className="rounded-md border border-slate-200 p-2">
+            <div key={i} className="rounded-md border-2 border-ink/15 bg-bone p-2.5">
               <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold text-slate-400">{i + 1}</span>
+                {/* Zero-padded round number echoes the milestone scorecard on the cards. */}
+                <span className="font-display text-sm leading-none text-ink/40">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
                 <input
-                  className="flex-1 rounded border border-slate-300 px-2 py-1 text-sm focus:border-indigo-500 focus:outline-none"
+                  className="flex-1 rounded border-2 border-ink/20 bg-canvas px-2 py-1 text-sm font-medium text-ink placeholder:text-ink/30 transition focus:border-ink focus:outline-none"
                   placeholder="Milestone title"
                   value={m.title}
                   onChange={(e) => updateMilestone(i, "title", e.target.value)}
@@ -115,14 +128,14 @@ export function TaskForm({ onSubmit, onCancel }: Props) {
                   type="button"
                   onClick={() => removeMilestone(i)}
                   disabled={milestones.length <= MILESTONE_MIN}
-                  className="text-slate-400 hover:text-rose-600 disabled:opacity-30"
+                  className="text-ink/30 transition hover:text-knockout disabled:opacity-30 disabled:hover:text-ink/30"
                   title="Remove milestone"
                 >
                   ✕
                 </button>
               </div>
               <input
-                className="mt-1 w-full rounded border border-slate-200 px-2 py-1 text-xs focus:border-indigo-500 focus:outline-none"
+                className="mt-1.5 w-full rounded border-2 border-ink/15 bg-canvas px-2 py-1 text-xs text-ink placeholder:text-ink/30 transition focus:border-ink focus:outline-none"
                 placeholder="Relevance — why this milestone matters to the task"
                 value={m.relevance}
                 onChange={(e) => updateMilestone(i, "relevance", e.target.value)}
@@ -136,16 +149,16 @@ export function TaskForm({ onSubmit, onCancel }: Props) {
         <button
           type="button"
           onClick={onCancel}
-          className="rounded-md px-4 py-2 text-sm text-slate-600 hover:bg-slate-100"
+          className="rounded-md border-2 border-ink/20 px-4 py-2 text-sm font-bold uppercase tracking-wide text-ink/60 transition hover:border-ink hover:text-ink"
         >
           Cancel
         </button>
         <button
           type="submit"
           disabled={!canSubmit || submitting}
-          className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-40"
+          className="rounded-md border-2 border-ink bg-knockout px-5 py-2.5 text-sm font-extrabold uppercase tracking-wide text-white shadow-punch transition hover:-translate-y-0.5 active:translate-y-0 active:shadow-punch-sm disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
         >
-          {submitting ? "Creating…" : "Create task"}
+          {submitting ? "Creating…" : "Create Task"}
         </button>
       </div>
     </form>

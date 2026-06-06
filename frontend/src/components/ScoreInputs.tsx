@@ -22,10 +22,12 @@ export function ScoreInputs({ impact, effort, urgency, onChange }: Props) {
       <div className="grid grid-cols-3 gap-3">
         {FIELDS.map(({ key, label, hint }) => (
           <label key={key} className="block">
-            <span className="text-sm font-medium text-slate-700">{label}</span>
-            <span className="block text-xs text-slate-400">{hint}</span>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-ink/60">
+              {label}
+            </span>
+            <span className="block text-[10px] font-medium text-ink/40">{hint}</span>
             <select
-              className="mt-1 w-full rounded-md border border-slate-300 px-2 py-1.5 text-sm focus:border-indigo-500 focus:outline-none"
+              className="mt-1 w-full rounded-md border-2 border-ink/20 bg-bone px-2 py-1.5 text-sm font-medium text-ink transition focus:border-ink focus:outline-none"
               value={values[key]}
               onChange={(e) => onChange(key, Number(e.target.value))}
             >
@@ -38,9 +40,12 @@ export function ScoreInputs({ impact, effort, urgency, onChange }: Props) {
           </label>
         ))}
       </div>
-      <div className="text-sm text-slate-600">
-        Priority score preview:{" "}
-        <span className="font-semibold text-indigo-600">{score}</span>
+      {/* Live priority preview as a mini scorecard chip, matching the card hero badge. */}
+      <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-ink/60">
+        Priority Preview
+        <span className="rounded border-2 border-ink bg-ink px-2 py-0.5 font-display text-base leading-none text-bone">
+          {score}
+        </span>
       </div>
     </div>
   );
