@@ -20,8 +20,9 @@ function Path-ForIndex([int]$i) {
   return (Join-Path $root ("prompt_history_{0}.csv" -f $i))
 }
 
-# Count data rows by matching the leading quoted ISO timestamp, so prompts that
-# contain embedded newlines don't inflate the count (and the header is skipped).
+# Count data rows by matching the leading quoted ISO timestamp (header is skipped).
+# A multi-line prompt only miscounts if one of its own continuation lines also begins
+# with a quoted date — vanishingly rare here, and the threshold is soft anyway.
 function Count-Records([string]$path) {
   if (-not (Test-Path $path)) { return 0 }
   $n = 0
