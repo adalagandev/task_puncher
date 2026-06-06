@@ -4,13 +4,24 @@ const BASE = "/api";
 
 class ApiError extends Error {}
 
+// Distinct from ApiError (which the backend returned): the server couldn't be
+// reached at all, so the UI shows a "is the backend running?" state (TP-006).
+class NetworkError extends Error {}
+
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const res = await fetch(`${BASE}${path}`, {
-    headers: { "Content-Type": "application/json" },
-    ...options,
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${BASE}${path}`, {
+      headers: { "Content-Type": "application/json" },
+      ...options,
+    });
+  } catch {
+    // fetch rejects on a dead connection / DNS / network failure — the API is down.
+    throw new NetworkError("Can't reach the server.");
+  }
   if (!res.ok) {
     let detail = `${res.status} ${res.statusText}`;
+    let parsed = false;
     try {
       const body = await res.json();
       if (body?.detail) {
@@ -18,8 +29,14 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
           ? body.detail.map((d: { msg: string }) => d.msg).join("; ")
           : body.detail;
       }
+      parsed = true;
     } catch {
       /* non-JSON error body */
+    }
+    // The Vite dev proxy answers a dead backend with a non-JSON 5xx page; treat
+    // that as unreachable rather than flashing a raw "500" at the user.
+    if (!parsed && res.status >= 500) {
+      throw new NetworkError("Can't reach the server.");
     }
     throw new ApiError(detail);
   }
@@ -61,4 +78,4 @@ export const api = {
     }),
 };
 
-export { ApiError };
+export { ApiError, NetworkError };

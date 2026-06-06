@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
-import { api, ApiError } from "../api/client";
+import { api, ApiError, NetworkError } from "../api/client";
 import type { MilestoneInput, Task, TaskInput } from "../types";
 
 export interface UseTasks {
   tasks: Task[];
   loading: boolean;
   error: string | null;
+  unreachable: boolean;
   clearError: () => void;
   refresh: () => Promise<void>;
   createTask: (data: TaskInput) => Promise<boolean>;
@@ -23,21 +24,30 @@ export function useTasks(): UseTasks {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  // Server-unreachable is its own state (not an error string) so the UI can swap
+  // in a "is the backend running? [Retry]" panel instead of the red banner (TP-006).
+  const [unreachable, setUnreachable] = useState(false);
 
   const run = useCallback(async (fn: () => Promise<unknown>) => {
     try {
       await fn();
+      setUnreachable(false); // a successful call proves the server is back
     } catch (e) {
-      setError(e instanceof ApiError ? e.message : "Something went wrong");
+      if (e instanceof NetworkError) setUnreachable(true);
+      else setError(e instanceof ApiError ? e.message : "Something went wrong");
       throw e;
     }
   }, []);
 
   const refresh = useCallback(async () => {
+    setLoading(true); // also covers Retry, so the panel shows progress
     try {
       setTasks(await api.listTasks());
+      setUnreachable(false);
+      setError(null);
     } catch (e) {
-      setError(e instanceof ApiError ? e.message : "Failed to load tasks");
+      if (e instanceof NetworkError) setUnreachable(true);
+      else setError(e instanceof ApiError ? e.message : "Failed to load tasks");
     } finally {
       setLoading(false);
     }
@@ -51,6 +61,7 @@ export function useTasks(): UseTasks {
     tasks,
     loading,
     error,
+    unreachable,
     clearError: () => setError(null),
     refresh,
     createTask: async (data) => {
@@ -59,7 +70,8 @@ export function useTasks(): UseTasks {
         await refresh();
         return true;
       } catch (e) {
-        setError(e instanceof ApiError ? e.message : "Failed to create task");
+        if (e instanceof NetworkError) setUnreachable(true);
+        else setError(e instanceof ApiError ? e.message : "Failed to create task");
         return false;
       }
     },
