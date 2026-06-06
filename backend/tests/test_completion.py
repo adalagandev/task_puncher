@@ -1,5 +1,7 @@
 """Task completion: auto-complete/reopen from milestone toggles, plus the manual
 complete/reopen endpoints (TP-011)."""
+from datetime import datetime
+
 from tests.conftest import make_task_payload
 
 
@@ -117,12 +119,13 @@ def test_timestamps_serialize_tz_aware_utc(client):
     completed = client.post(f"/api/tasks/{task['id']}/complete").json()
 
     def _is_tz_aware(iso: str) -> bool:
-        from datetime import datetime as _dt
-        return _dt.fromisoformat(iso).tzinfo is not None
+        return datetime.fromisoformat(iso).tzinfo is not None
 
+    assert selected["selected_at"] is not None, "expected selected_at to be set"
     assert _is_tz_aware(selected["created_at"])
     assert _is_tz_aware(selected["selected_at"])
     assert _is_tz_aware(completed["completed_at"])
+    assert _is_tz_aware(completed["updated_at"])
 
 
 def test_completing_a_selection_lets_a_fourth_task_fit(client):
