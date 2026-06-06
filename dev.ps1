@@ -30,13 +30,13 @@ if (-not (Test-Path (Join-Path $frontend "node_modules"))) {
 function Wait-ForPort([int]$Port, [int]$TimeoutSec = 30) {
     $deadline = (Get-Date).AddSeconds($TimeoutSec)
     while ((Get-Date) -lt $deadline) {
+        $client = New-Object System.Net.Sockets.TcpClient
         try {
-            $client = New-Object System.Net.Sockets.TcpClient
             $client.Connect("localhost", $Port)
-            $client.Close()
             return $true
         }
         catch { Start-Sleep -Milliseconds 400 }
+        finally { $client.Dispose() }  # Connect leaves the socket open on success; dispose either way
     }
     return $false
 }
