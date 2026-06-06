@@ -112,8 +112,8 @@ the baseline the tickets build on.
 - ✅ **TP-018-UX--all-tasks-emoji** — decorative `aria-hidden` smiley before the "All Tasks" heading (ASCII `&#x1F60A;` entity to avoid mojibake) — [PR #11] — 2026-06-01
 - ⬜ **TP-005-UX--milestone-label-toggle** — clicking a milestone's label text (not just the checkbox) toggles `done`; wrap input + text in a `<label>` or wire `id`/`htmlFor`, keep the `onToggle(m.id, !m.done)` flow.
   - Files: `frontend/src/components/MilestoneList.tsx` (1, bite-size)
-- ⬜ **TP-006-UX--backend-unreachable-state** — show a friendly "can't reach the server — is the backend running? [Retry]" state instead of the raw Vite `ECONNREFUSED`/5xx error; also harden `dev.ps1` to wait for `:8000` before starting the frontend.
-  - Files: `frontend/src/api/client.ts`, `frontend/src/hooks/useTasks.ts`, `dev.ps1` (~2–3, bite-size)
+- ✅ **TP-006-UX--backend-unreachable-state** — `client.ts` now throws a distinct `NetworkError` when the API is unreachable (fetch rejects, or the Vite proxy returns a non-JSON 5xx for a dead backend); `useTasks` tracks an `unreachable` flag (set on `NetworkError`, cleared on any success); `App.tsx` swaps in a friendly "🔌 Can't reach the server — is the backend running on :8000? [Retry]" panel (suppressing the red error banner) with a Retry that re-runs `refresh()`. Also hardened `dev.ps1` to wait for `:8000` (TCP probe, 30s) before starting the frontend. **Big bite (4 files)** — flagged; one cohesive change. Build + PS parse clean. — 2026-06-06
+  - Files: `frontend/src/api/client.ts`, `frontend/src/hooks/useTasks.ts`, `frontend/src/App.tsx`, `dev.ps1`
 - ⬜ **TP-015-UX--newtask-form-restyle** — make the New Task form share the dashboard's fight-night language (borders, `shadow-punch`, display headings, uppercase labels, knockout/gold accents); visual-only, keep the `onSubmit`/`onCancel` flow + field set.
   - Files: `frontend/src/components/TaskForm.tsx` (+ shared input styles if extracted) (~1–2, bite-size)
 

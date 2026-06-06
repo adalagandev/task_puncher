@@ -25,11 +25,38 @@ if (-not (Test-Path (Join-Path $frontend "node_modules"))) {
     Write-Error "Frontend deps not installed. Run: `n  cd frontend; npm install"
 }
 
+# Block until a TCP port accepts a connection, so we don't start the frontend
+# before the backend is listening (which made the UI flash a proxy error).
+function Wait-ForPort([int]$Port, [int]$TimeoutSec = 30) {
+    $deadline = (Get-Date).AddSeconds($TimeoutSec)
+    while ((Get-Date) -lt $deadline) {
+        try {
+            $client = New-Object System.Net.Sockets.TcpClient
+            $client.Connect("localhost", $Port)
+            $client.Close()
+            return $true
+        }
+        catch { Start-Sleep -Milliseconds 400 }
+    }
+    return $false
+}
+
 # --- launch ------------------------------------------------------------------
 Write-Host "Starting backend  -> http://localhost:8000  (docs at /docs)" -ForegroundColor Cyan
 $backendProc = Start-Process -FilePath $venvPython `
     -ArgumentList "-m", "uvicorn", "app.main:app", "--reload", "--port", "8000" `
     -WorkingDirectory $backend -PassThru
+
+Write-Host "Waiting for backend to listen on :8000..." -ForegroundColor Cyan
+if ($backendProc.HasExited) {
+    Write-Error "Backend exited during startup (check the backend window)."
+}
+if (-not (Wait-ForPort -Port 8000)) {
+    Write-Warning "Backend didn't open :8000 within 30s; starting frontend anyway (the UI will show a Retry)."
+}
+else {
+    Write-Host "Backend is up." -ForegroundColor Green
+}
 
 Write-Host "Starting frontend -> http://localhost:5173" -ForegroundColor Cyan
 $frontendProc = Start-Process -FilePath "npm.cmd" `
