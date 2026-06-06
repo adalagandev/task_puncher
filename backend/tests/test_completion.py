@@ -104,6 +104,7 @@ def test_milestone_autocomplete_frees_the_weekly_slot(client):
     after = client.get(f"/api/tasks/{task['id']}").json()
     assert after["status"] == "completed"
     assert after["is_selected_this_week"] is False
+    assert len(client.get("/api/weekly").json()) == 0
 
 
 def test_completing_a_selection_lets_a_fourth_task_fit(client):
@@ -113,3 +114,5 @@ def test_completing_a_selection_lets_a_fourth_task_fit(client):
         client.put(f"/api/weekly/{tid}", json={"selected": True})
     client.post(f"/api/tasks/{ids[0]}/complete")
     assert client.put(f"/api/weekly/{ids[3]}", json={"selected": True}).status_code == 200
+    # The weekly list settles at exactly 3 (two survivors + the new pick), not 4.
+    assert len(client.get("/api/weekly").json()) == 3
