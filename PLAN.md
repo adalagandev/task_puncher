@@ -170,6 +170,19 @@ Decisions locked in (2026-06-01):
 
 ## Session log
 Where I left off (rule 9), newest first.
+- **2026-06-06 (evening, session end)** — **Cleared the entire queued backlog** — 0 ⬜ tasks
+  left in the tracker. Shipped six tickets, each auto-reviewed by the local hook (findings
+  acted on), merged + ancestry-verified, branches pruned, **0 open PRs**: **TP-022-FIX** (#24,
+  weekly slot freed on completion), **TP-025-FIX** (#25, tz-aware timestamp serialization),
+  **TP-023-FOCUS** (#27, "Up Next" backlog queue with 5→15→30→50 reveal), **TP-006-UX** (#28,
+  friendly server-unreachable state + Retry, and `dev.ps1` waits for `:8000`), **TP-005-UX**
+  (#29, click a milestone title to toggle), **TP-015-UX** (#30, New Task form restyled to
+  fight-night). Backend 25 tests pass; frontend build clean throughout. **Next session:** no
+  queued tickets — pick new scope (e.g. the auth seam, the unused `/api/weekly` GET, or polish).
+  **Open loose ends (not yet ticketed):** (1) the prompt-logging hook still writes to
+  `prompt_history.csv` despite the rule-12 rollover — rewire its path to `prompt_history_2.csv`;
+  (2) **TP-006 & TP-015 weren't visually verified** in a running app (build/type-check only) —
+  worth a live check of the unreachable panel and the restyled form.
 - **2026-06-06 (session end)** — Cleared the **FIX epic**: shipped **TP-022-FIX** (completing
   a task now frees its weekly slot — `set_completed` clears `is_selected_this_week`; **PR #24**)
   and **TP-025-FIX** (timestamps serialize tz-aware UTC via a `TaskOut` `field_serializer`,
