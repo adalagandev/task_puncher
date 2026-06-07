@@ -176,12 +176,16 @@ Decisions locked in (2026-06-01):
 
 ## Session log
 Where I left off (rule 9), newest first.
-- **2026-06-07 (session)** — Shipped **TP-028-DEVX--session-start-rules-hook**: the working
+- **2026-06-07 (session end)** — Built **TP-028-DEVX--session-start-rules-hook**: the working
   rules (`whats_up_claude.md`) now auto-inject via a new `SessionStart` hook, so I no longer
   rely on being told (or remembering) to read them — the harness loads them every session.
-  Confirmed **0 open PRs** (rule 11; nothing to pull). **Heads-up:** the hook fires at session
-  *start*, so it won't affect the session it was added in — verify it's registered via `/hooks`,
-  and the auto-load takes effect next session. **Still queued:** TP-027-FIX (Vite proxy IPv4).
+  Confirmed **0 open PRs** (rule 11; nothing to pull). **State at session end:** committed on
+  branch `TP-028-DEVX--session-start-rules-hook` (commit `9a1eb7a`) but **NOT pushed and NO PR
+  opened** — left to the user. **Next session:** (1) push the branch + open a PR for TP-028
+  (the local PR-review hook will auto-comment on `gh pr create`), then merge + ancestry-verify;
+  (2) **verify the new hook is registered via `/hooks`** — it fires at session *start* so it had
+  no effect on the session it was added in, but should auto-load the rules from this session on.
+  **Still queued:** TP-027-FIX (Vite proxy IPv4 — quick fix).
 - **2026-06-07 (session end)** — Cleared the two carried loose ends. **Shipped TP-026-DEVX**
   (#32): the `capture-prompt.ps1` hook is now self-rolling — it writes to the highest-numbered
   `prompt_history*.csv` and rolls at 100 records, so rule 12 is automatic (verified: this
