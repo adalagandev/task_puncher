@@ -1,2 +1,6 @@
 timestamp,session_id,prompt
 "2026-06-07T00:04:49.0767646+02:00","c73d3f76-04c2-4c3f-8373-273c5c3ee6b2","let's end session here for now"
+"2026-06-07T09:20:50.4943527+02:00","973165c0-a1f0-4ac7-af69-d4f931d03a33","have you read Claude.md??"
+"2026-06-07T09:22:36.0786583+02:00","973165c0-a1f0-4ac7-af69-d4f931d03a33","Yes, before that. Why do I need to tell you about whats_up_claude.md can't you do that automatically?"
+"2026-06-07T09:35:29.7207851+02:00","973165c0-a1f0-4ac7-af69-d4f931d03a33","set up the hook and merge into CLAUDE.md, CLAUDE.md will get too big. We do not want that. FOR AI, that's easy to read and maintain, because you read 5 gazillion words an hour."
+"2026-06-07T09:40:19.6658582+02:00","973165c0-a1f0-4ac7-af69-d4f931d03a33","Yes, formalize it and check for pending PRs"

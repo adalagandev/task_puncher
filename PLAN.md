@@ -163,6 +163,8 @@ Decisions locked in (2026-06-01):
   - ⚠️ **Lost in merge:** PR #10's merge commit was orphaned (main went #9→#11→#12, bypassing #10), so the hook never reached `main`. Re-landed via TP-020 (PR #13).
 - ✅ **TP-026-DEVX--prompt-log-autoroll** — made the `capture-prompt.ps1` logging hook self-rolling for rule 12: it now writes to the highest-numbered `prompt_history*.csv` and rolls to the next index once the active file hits 100 records (records counted by leading-timestamp match, so embedded newlines don't inflate the count). Fixes the loose end where the hook kept appending to the 100+-record `prompt_history.csv`; new prompts now land in `prompt_history_2.csv` automatically. Verified by feeding a test payload through the live hook (it landed in `_2`, quote/newline-escaped); the test record was then removed, so `_2` stays header-only in the diff until the next real prompt. — 2026-06-06
   - Files: `.claude/hooks/capture-prompt.ps1` (bite-size)
+- ✅ **TP-028-DEVX--session-start-rules-hook** — added a `SessionStart` hook (`load-working-rules.ps1` + wiring in `.claude/settings.json`) that injects `whats_up_claude.md` into context at session start, so the working rules load **deterministically via the harness** instead of relying on Claude noticing the "read it" line in CLAUDE.md. The script reads the file with `[System.IO.File]::ReadAllText(..., UTF8)` — PS 5.1's `Get-Content -Raw` mangled the UTF-8 em-dashes and attached `PSPath` note-properties to the string — and emits it as `hookSpecificOutput.additionalContext`. Also updated CLAUDE.md's session-start step to report which hooks are active. Pipe-tested (valid JSON, clean string); fires next session — verify via `/hooks`. — 2026-06-07
+  - Files: `.claude/hooks/load-working-rules.ps1` (new), `.claude/settings.json`, `CLAUDE.md` (bite-size)
 
 ## EPIC: DOCS — documentation & process
 - ✅ **TP-016-DOCS--plan-task-tracker** — made PLAN.md the single task tracker (rules 8–10) and retired `BACKLOG.md`. — [PR #9] — 2026-06-01
@@ -174,6 +176,12 @@ Decisions locked in (2026-06-01):
 
 ## Session log
 Where I left off (rule 9), newest first.
+- **2026-06-07 (session)** — Shipped **TP-028-DEVX--session-start-rules-hook**: the working
+  rules (`whats_up_claude.md`) now auto-inject via a new `SessionStart` hook, so I no longer
+  rely on being told (or remembering) to read them — the harness loads them every session.
+  Confirmed **0 open PRs** (rule 11; nothing to pull). **Heads-up:** the hook fires at session
+  *start*, so it won't affect the session it was added in — verify it's registered via `/hooks`,
+  and the auto-load takes effect next session. **Still queued:** TP-027-FIX (Vite proxy IPv4).
 - **2026-06-07 (session end)** — Cleared the two carried loose ends. **Shipped TP-026-DEVX**
   (#32): the `capture-prompt.ps1` hook is now self-rolling — it writes to the highest-numbered
   `prompt_history*.csv` and rolls at 100 records, so rule 12 is automatic (verified: this
