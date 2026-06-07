@@ -1,5 +1,22 @@
 {
   "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell.exe",
+            "args": [
+              "-NoProfile",
+              "-ExecutionPolicy",
+              "Bypass",
+              "-File",
+              "D:\\ai_personal_projects\\task_puncher\\.claude\\hooks\\load-working-rules.ps1"
+            ]
+          }
+        ]
+      }
+    ],
     "UserPromptSubmit": [
       {
         "hooks": [
