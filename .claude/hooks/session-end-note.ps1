@@ -29,7 +29,7 @@ if (-not $Worker) {
     Start-Process -FilePath 'powershell.exe' -WindowStyle Hidden -WorkingDirectory $repo `
       -ArgumentList @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', $PSCommandPath,
         '-Worker', '-TranscriptPath', $tp, '-RepoDir', $repo)
-  } catch { }
+  } catch { try { Write-Log "Dispatcher: $_" } catch { } }  # log but never let a hiccup block exit
   exit 0
 }
 
@@ -98,7 +98,7 @@ Output only the bullet — no preamble, no closing remarks, no code fence.
 
   $note = $note.Trim()
   if (-not $note) { Write-Log 'Empty note from claude; nothing written.'; exit 0 }
-  if ($note -notmatch '(?m)^\s*-\s') { $note = "- $note" }   # ensure it renders as a bullet
+  if ($note -notmatch '^\s*-\s') { $note = "- $note" }   # ensure it *starts* as a bullet ($note is trimmed)
   $note = ($note -replace "`r`n", "`n") -replace "`n", "`r`n"  # normalize to the file's CRLF
 
   if ($DryRun) { Write-Log "DRY RUN - note follows:`n$note"; Write-Output $note; exit 0 }
@@ -108,11 +108,14 @@ Output only the bullet — no preamble, no closing remarks, no code fence.
   $plan = [System.IO.File]::ReadAllText($planPath, [System.Text.Encoding]::UTF8)
   $marker = 'Where I left off (rule 9), newest first.'
   $idx = $plan.IndexOf($marker)
-  if ($idx -lt 0) {
-    Write-Log 'Marker not found in PLAN.md; appending to end instead.'
+  $nlIdx = if ($idx -ge 0) { $plan.IndexOf("`n", $idx) } else { -1 }
+  if ($idx -lt 0 -or $nlIdx -lt 0) {
+    # Marker missing, or it's the final line with no trailing newline — append after the end
+    # (guards the off-by-one where IndexOf returns -1 and we'd otherwise prepend at position 0).
+    if ($idx -lt 0) { Write-Log 'Marker not found in PLAN.md; appending to end instead.' }
     $plan = $plan.TrimEnd() + "`r`n$note`r`n"
   } else {
-    $insertAt = $plan.IndexOf("`n", $idx) + 1   # just after the marker line
+    $insertAt = $nlIdx + 1   # just after the marker line
     $plan = $plan.Substring(0, $insertAt) + "$note`r`n" + $plan.Substring($insertAt)
   }
   # Write UTF-8 *without* BOM so PLAN.md doesn't grow a stray leading glyph.
