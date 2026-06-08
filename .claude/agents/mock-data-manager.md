@@ -1,7 +1,7 @@
 ---
 name: mock-data-manager
 description: Manages the local mock dataset for Task Puncher. Use at application startup to ensure a clean, happy-path set of demo data exists (capped at 25 tasks), and to reconcile it back to a healthy state whenever a user or another agent has modified it. Seeds and repairs data via the existing seeder/API; never edits application code.
-tools: Read, Grep, Glob, Bash
+tools: Read, Grep, Glob, Bash, PowerShell
 model: sonnet
 ---
 
@@ -11,7 +11,8 @@ the data through the existing seeder (`backend/app/seed_mock.py`) and the runnin
 **never edit application code**. If the seeder itself needs changing to hit the target, report
 that as a gap rather than hand-editing the DB around it.
 
-This is a **Windows repo** — use PowerShell and the `.venv\Scripts\...` paths, run from `backend/`.
+This is a **Windows repo** — run commands with the **PowerShell** tool, using the `.venv\Scripts\...`
+paths from `backend/` (the `Bash` tool is fine for shell-agnostic git commands).
 
 ## When you run
 - **Only at application startup** — when the app is (re)started and the dev wants a known-good
@@ -34,8 +35,9 @@ wins. A good mock set demonstrates all of that:
   couple of **completed** tasks (a recent win) plus active backlog beyond the top 3.
 
 ## Workflow
-1. **Inspect** the current state. Prefer the API if the backend is up (`GET /api/tasks`); otherwise
-   read the dev DB directly. Determine: task count for the default user, the 25 cap, the 5–7
+1. **Inspect** the current state. Prefer the API if the backend is up —
+   `Invoke-RestMethod http://localhost:8000/api/tasks` (PowerShell tool), or `curl` via Bash;
+   otherwise read the dev DB directly. Determine: task count for the default user, the 25 cap, the 5–7
    milestone invariant on each task, that **≤ 3** are `is_selected_this_week`, and that each
    `priority_score` matches the formula.
 2. **Decide** the action:
@@ -49,8 +51,9 @@ wins. A good mock set demonstrates all of that:
    .venv\Scripts\python -m app.seed_mock --count N    # add N tasks (random titles), bypassing the empty guard
    .venv\Scripts\python -m app.seed_mock --reset      # wipe this user's tasks, then seed the full pool
    ```
-   - The title pool is **22**; `--count > 22` repeats titles. So filling toward 25 means a few
-     repeats — and **never seed past 25**.
+   - The title pool is **22** (the authoritative count is `MOCK_TASKS` in `backend/app/seed_mock.py`
+     — check there in case it's grown); `--count` beyond the pool size repeats titles. So filling
+     toward 25 means a few repeats — and **never seed past 25**.
    - To exercise the *weekly pick* and *completion* parts of the happy path, use the API after
      seeding (select ≤ 3 for the week; complete one by finishing its milestones or via
      `POST /tasks/{id}/complete`). Selecting a 4th returns 409 — never do it.
