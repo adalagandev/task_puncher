@@ -5,3 +5,8 @@ timestamp,session_id,prompt
 "2026-06-07T09:35:29.7207851+02:00","973165c0-a1f0-4ac7-af69-d4f931d03a33","set up the hook and merge into CLAUDE.md, CLAUDE.md will get too big. We do not want that. FOR AI, that's easy to read and maintain, because you read 5 gazillion words an hour."
 "2026-06-07T09:40:19.6658582+02:00","973165c0-a1f0-4ac7-af69-d4f931d03a33","Yes, formalize it and check for pending PRs"
 "2026-06-07T09:52:13.4385748+02:00","973165c0-a1f0-4ac7-af69-d4f931d03a33","end this session, then I will close this terminal"
+"2026-06-07T10:46:53.5612203+02:00","bb9e66ba-9216-4094-b915-86b37c72069e","Do a prompt analysis of prompt_history csvs, add suggestion/tips in each category. I wanna see percentages. I want to see human readable report. Then, create a PDF of that report."
+"2026-06-07T11:18:33.4233372+02:00","bb9e66ba-9216-4094-b915-86b37c72069e","create asks for prompt improvements. No more than 10. prioritize. add to PLAN.md"
+"2026-06-07T11:26:11.3837213+02:00","bb9e66ba-9216-4094-b915-86b37c72069e","end session."
+"2026-06-08T11:07:46.7321206+02:00","c74d6a19-58ac-44da-986b-85f2976f16dc","- Add a session-end summary to the same hook (or a `Stop` hook) so ""end session"" auto-writes
+  the PLAN.md left-off note instead of being a manual prompt every time."
