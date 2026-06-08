@@ -6,6 +6,8 @@ hooks and scripts are `.ps1`.
 
 | What | File | Kind | Trigger |
 |---|---|---|---|
+| Session-start rules loader | `.claude/hooks/load-working-rules.ps1` | Claude Code hook | start of every session |
+| Session-end "left off" note | `.claude/hooks/session-end-note.ps1` | Claude Code hook | a session ending |
 | Prompt logger | `.claude/hooks/capture-prompt.ps1` | Claude Code hook | every prompt you submit |
 | Local PR code-review | `.claude/hooks/pr-review.ps1` | Claude Code hook | a `gh pr create` run in-session |
 | Code-review rubric | `.claude/agents/code-reviewer.md` | Claude Code subagent | invoked on demand, or used by the hook above |
@@ -20,10 +22,49 @@ settings/permissions live in `.claude/settings.local.json` (not the place for th
 
 ## Claude Code hooks
 
-Both hooks are registered in `.claude/settings.json` and run via `powershell.exe`. Claude
+These hooks are registered in `.claude/settings.json` and run via `powershell.exe`. Claude
 Code reads this file from the **currently checked-out working tree**, so a hook is only
 active on branches that contain it (this is why a new hook starts firing only after it
 merges to `main`, or while you're on its feature branch).
+
+### `load-working-rules.ps1` — session-start rules loader
+Injects `whats_up_claude.md` (the working rules) into Claude's context at the start of every
+session, so the rules load **deterministically via the harness** instead of relying on Claude
+remembering to read them.
+
+- **Event:** `SessionStart`.
+- **Action:** reads `whats_up_claude.md` with `[System.IO.File]::ReadAllText(.., UTF8)` (PS 5.1's
+  `Get-Content -Raw` mangles the UTF-8 em-dashes and attaches `PSPath` note-properties) and emits
+  the body as `hookSpecificOutput.additionalContext`.
+- **Output:** the rules appear in-context at session start.
+- **Note:** fires at session *start*, so adding/changing it has no effect on the session that
+  added it — it takes effect from the next session.
+
+### `session-end-note.ps1` — session-end "where I left off" note
+Auto-writes the rule-9 "where I left off" note to `PLAN.md` when a session ends, so closing a
+session stops being a manual prompt every time. The session-lifecycle complement to the loader
+above: it automates the *close* the way `load-working-rules.ps1` automates the *open*.
+
+- **Event:** `SessionEnd` (deliberately **not** `Stop` — `Stop` fires after every assistant turn
+  and would spam the log).
+- **Two passes** (same shape as `pr-review.ps1`):
+  1. **Dispatcher** (synchronous, must stay fast): reads the hook JSON on stdin for the
+     `transcript_path`; if it's missing, exits. Otherwise **re-launches itself detached**
+     (`-Worker`) so the slow summary never delays the session exit.
+  2. **Worker** (detached): extracts the user+assistant text from the transcript JSONL (tool
+     noise skipped), skips trivial sessions (< 500 chars, e.g. a bare `/clear`), then runs headless
+     Claude — `<transcript> | claude -p "<instruction>" --model sonnet` — to produce one Session-log
+     bullet, and **splices it into `PLAN.md` right after the "newest first." marker** so it becomes
+     the top entry.
+- **Encoding/recursion notes (already handled):** forces UTF-8 on the pipe to/from `claude` and
+  writes `PLAN.md` as UTF-8 **without BOM**; avoids `2>&1` on the native call; runs the headless
+  call from a neutral dir so this project's own hooks — including this `SessionEnd` hook — don't
+  re-fire on it (no recursion).
+- **Output:** a new bullet at the top of `PLAN.md`'s Session log, plus a debug log at
+  `.claude/session-end-note.log` (gitignored).
+- **Test:** run the worker directly — `session-end-note.ps1 -Worker -DryRun -TranscriptPath <jsonl>
+  -RepoDir <repo>` prints the note instead of editing `PLAN.md`.
+- **Disable:** remove the `SessionEnd` block from `.claude/settings.json`.
 
 ### `capture-prompt.ps1` — prompt logger
 - **Event:** `UserPromptSubmit` (fires before each prompt is processed).
@@ -104,3 +145,4 @@ auth later replaces only this.
 - **`.gitattributes`** — marks `prompt_history.csv` as `merge=union` so the append-only log
   auto-merges across branches/rebases instead of conflicting on every concurrent append.
 - **`.claude/pr-review.log`** — runtime debug log for the review hook; gitignored.
+- **`.claude/session-end-note.log`** — runtime debug log for the session-end note hook; gitignored.
