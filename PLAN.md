@@ -169,13 +169,69 @@ Decisions locked in (2026-06-01):
 ## EPIC: DOCS — documentation & process
 - ✅ **TP-016-DOCS--plan-task-tracker** — made PLAN.md the single task tracker (rules 8–10) and retired `BACKLOG.md`. — [PR #9] — 2026-06-01
 - ✅ **TP-020-DOCS--automation-doc** — `AUTOMATION.md` documenting every hook/script/agent; backfilled the merged tickets into this tracker. — [PR #13] — 2026-06-01
+- ✅ **TP-037-DOCS--prompt-history-analysis** — analyzed the auto-logged `prompt_history*.csv` (97 records → 92 real prompts over 11 sessions) and produced a human-readable report + a styled 2-page PDF, plus a reproducible generator. Findings (Session Management 25%, Git/PR 18.5%, Workflow pings 15.2%, logging noise) seeded the new **EPIC: PROMPTOPS** below (TP-029→036). — 2026-06-08
+  - Files: `reports/PROMPT_ANALYSIS.md` (new), `reports/Prompt_Analysis_Report.pdf` (new), `reports/generate_prompt_report_pdf.py` (new), `PLAN.md` (PROMPTOPS epic) — big bite (4), one cohesive analysis deliverable
 
 ## EPIC: FIX — regressions & maintenance
 - ✅ **TP-019-FIX--date-tonedown-and-prompt-log-union** — re-applied the lost toned-down date stamp (commit `8b7a1d6` never reached main) and marked `prompt_history.csv` `merge=union` to stop the recurring log conflicts. — [PR #12] — 2026-06-01
 - ✅ **TP-021-FIX--restore-pr-review-hook** — landed the PR-review hook on `main` (`pr-review.ps1` + `PostToolUse` wiring + `.gitignore` entry); PR #13's merge had dropped the restore commit. Verified present on `main`. — [PR #14] — 2026-06-01
 
+## EPIC: PROMPTOPS — prompt-workflow improvements
+Asks derived from the **2026-06-07 prompt-history analysis** (`reports/PROMPT_ANALYSIS.md` /
+`reports/Prompt_Analysis_Report.pdf`, 92 real prompts over 11 sessions). Goal: cut prompt
+overhead and raise prompt quality. **Prioritized P1→P8 by leverage** (impact ÷ effort); all
+bite-size. The top three attack the two biggest findings — Session Management (25%) and the
+noisy log.
+- ⬜ **(P1) TP-029-PROMPTOPS--session-end-note-hook** — a `SessionEnd`/`Stop` hook that
+  auto-appends the rule-9 "where I left off" note to PLAN.md, so **"end session" stops being a
+  manual prompt**. **Why:** Session Management is 25% of all prompts (the single biggest bucket);
+  TP-028 already automated the *open*, this automates the *close*. Files: `.claude/hooks/session-end-note.ps1` (new), `.claude/settings.json`.
+- ⬜ **(P2) TP-030-PROMPTOPS--prompt-log-noise-filter** — `capture-prompt.ps1` skips records
+  that aren't real user prompts (`<task-notification>` blocks, `ultraplan`/CLI status echoes).
+  **Why:** 5 such rows polluted the analysis; filtering at write time makes every future audit
+  measure intent, not tooling noise. Files: `.claude/hooks/capture-prompt.ps1`.
+- ⬜ **(P3) TP-031-PROMPTOPS--claude-md-faq** — add a short FAQ block to CLAUDE.md with the
+  recurring one-off answers: where the SQLite DB lives + how to open it, `dev.ps1` is the
+  one-command runner, the DB is swappable to MySQL later. **Why:** these were each re-asked
+  across sessions (Learning bucket); turning them into reference removes the round-trips. Files: `CLAUDE.md`.
+- ⬜ **(P4) TP-032-PROMPTOPS--pre-pr-rebase-guard** — before an in-session `gh pr create`,
+  auto `git fetch` + rebase on `origin/main` (or warn if behind). **Why:** 4 separate prompts
+  were merge-conflict cleanup from branches that drifted; surfacing conflicts pre-PR kills that
+  class. Files: `.claude/hooks/pr-review.ps1` (or a sibling pre-create check).
+- ⬜ **(P5) TP-033-PROMPTOPS--next-3-pointer** — keep a single ordered **"Next up (3)"** block
+  at the top of the Task tracker, refreshed at session end (pairs with P1's hook). **Why:** 14
+  "what's the next task?" pings — make the answer a glance, not a prompt. Files: `PLAN.md`.
+- ⬜ **(P6) TP-034-PROMPTOPS--local-review-canonical-doc** — consolidate the "local code review,
+  Anthropic key never on GitHub" setup into one canonical AUTOMATION.md section. **Why:** the
+  same concern was asked ~4 different ways across the Agentic bucket; one source of truth stops
+  the re-derivation. Files: `AUTOMATION.md`.
+- ⬜ **(P7) TP-035-PROMPTOPS--prompt-templates** — add a small `PROMPTS.md` of reusable
+  templates: **feature ticket** (vibe + spec: size / color token / max items / breakpoint),
+  **bug report** (error text + last action), **merge & continue**. **Why:** vague feature
+  prompts ("shiny loud") and bare bug reports cost a rework round-trip; a spec scaffold front-
+  loads the detail. Files: `PROMPTS.md` (new).
+- ⬜ **(P8) TP-036-PROMPTOPS--analysis-refresh-cadence** — rerun
+  `reports/generate_prompt_report_pdf.py` at each rule-12 rollover (every 100 prompts) so the
+  report stays current. **Why:** keeps this analysis a living dashboard, not a one-off. Files:
+  rollover hook note + `reports/`.
+
 ## Session log
 Where I left off (rule 9), newest first.
+- **2026-06-07 (session end)** — **Prompt-history analysis session.** Analyzed both
+  `prompt_history*.csv` (97 records → 92 real prompts, 5 tooling-noise rows, 11 sessions) and
+  produced a human-readable report + a styled 2-page PDF: `reports/PROMPT_ANALYSIS.md`,
+  `reports/Prompt_Analysis_Report.pdf`, and the reproducible generator
+  `reports/generate_prompt_report_pdf.py` (uses `fpdf2`, installed to user site). Biggest
+  findings: Session Management = 25%, Git/PR = 18.5%, Workflow pings = 15.2%; logging hook is
+  capturing non-prompt noise. Turned the findings into a new **EPIC: PROMPTOPS** — 8 prioritized
+  asks **TP-029→TP-036** (all ⬜ queued, bite-size). **State at session end:** still on branch
+  `TP-028-DEVX--session-start-rules-hook`; the `reports/` files + the PROMPTOPS PLAN.md edits are
+  **uncommitted** (no branch/commit/PR made for this analysis work — left to the user). **Next
+  session:** (1) decide where the analysis work lands (own branch/ticket vs. fold into a DOCS
+  ticket) and commit it; (2) start **P1 TP-029-PROMPTOPS--session-end-note-hook** — the
+  highest-leverage ask (automates the "end session" prompt, attacking the 25% bucket); (3) the
+  pre-existing **TP-027-FIX** (Vite proxy IPv4) and **TP-028** push/PR are still pending from
+  prior sessions.
 - **2026-06-07 (session end)** — Built **TP-028-DEVX--session-start-rules-hook**: the working
   rules (`whats_up_claude.md`) now auto-inject via a new `SessionStart` hook, so I no longer
   rely on being told (or remembering) to read them — the harness loads them every session.
