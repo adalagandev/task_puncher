@@ -85,4 +85,4 @@ with a human-readable `detail` on the backend and it renders correctly in the UI
 
 
 ## At the start of each session
-- read whats_up_claude.md when finish tell the user
+- read whats_up_claude.md, then let the user know what hooks are active in the session.
