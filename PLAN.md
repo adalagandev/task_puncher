@@ -235,6 +235,21 @@ noisy log.
 
 ## Session log
 Where I left off (rule 9), newest first.
+- **2026-06-08 (session end)** — **Cleared the carried tangle and shipped four tickets, all merged
+  + ancestry-verified, 0 open PRs.** (1) **TP-028-DEVX** (#34) — landed the previously-unpushed
+  session-start rules hook. (2) **TP-037-DOCS** (#35) — committed the stranded prompt-history
+  analysis (`reports/` + the PROMPTOPS epic) as its own ticket. (3) **TP-029-PROMPTOPS** (#36) — the
+  P1 ask: a `SessionEnd` hook (`.claude/hooks/session-end-note.ps1`) that auto-writes *this* rule-9
+  note via a headless `claude -p` summary spliced into PLAN.md (chose `SessionEnd` over `Stop`;
+  recursion-safe, UTF-8/BOM-less; verified end-to-end). (4) **TP-038-DEVX** (#37) — two new subagents,
+  `qa-agent` (runs pytest + `npm run build`, checks invariants) and `mock-data-manager` (happy-path
+  mock data, 25-cap, reconciles when touched). Each PR was auto-reviewed by the local hook and its
+  findings acted on (off-by-one + regex fixes on TP-029; added the `PowerShell` tool to both agents
+  on TP-038). **State at session end:** on `main`, clean except `prompt_history_2.csv` (committed
+  with this note). **Note:** TP-029's hook is live from the **next** session on (hooks load at
+  startup), so this is the last hand-written left-off note. **Next session:** **TP-027-FIX** (Vite
+  proxy → IPv4, quick); optionally wire `mock-data-manager`'s seeding into the FastAPI lifespan so it
+  truly fires on app boot; PROMPTOPS **P2–P8 (TP-030→036)** still queued.
 - **2026-06-07 (session end)** — **Prompt-history analysis session.** Analyzed both
   `prompt_history*.csv` (97 records → 92 real prompts, 5 tooling-noise rows, 11 sessions) and
   produced a human-readable report + a styled 2-page PDF: `reports/PROMPT_ANALYSIS.md`,
