@@ -17,3 +17,4 @@ frontend/dist/
 
 # Claude Code local artifacts
 .claude/pr-review.log
+.claude/session-end-note.log

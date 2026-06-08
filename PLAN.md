@@ -182,10 +182,19 @@ Asks derived from the **2026-06-07 prompt-history analysis** (`reports/PROMPT_AN
 overhead and raise prompt quality. **Prioritized P1→P8 by leverage** (impact ÷ effort); all
 bite-size. The top three attack the two biggest findings — Session Management (25%) and the
 noisy log.
-- ⬜ **(P1) TP-029-PROMPTOPS--session-end-note-hook** — a `SessionEnd`/`Stop` hook that
-  auto-appends the rule-9 "where I left off" note to PLAN.md, so **"end session" stops being a
-  manual prompt**. **Why:** Session Management is 25% of all prompts (the single biggest bucket);
-  TP-028 already automated the *open*, this automates the *close*. Files: `.claude/hooks/session-end-note.ps1` (new), `.claude/settings.json`.
+- ✅ **(P1) TP-029-PROMPTOPS--session-end-note-hook** — a `SessionEnd` hook (`session-end-note.ps1`)
+  that auto-writes the rule-9 "where I left off" note to PLAN.md when a session ends, so **"end
+  session" stops being a manual prompt**. **Chose `SessionEnd` over `Stop`** — `Stop` fires after
+  every assistant turn and would spam the log. Mirrors `pr-review.ps1`: a fast dispatcher reads the
+  hook's `transcript_path` and hands off to a detached worker that extracts the user+assistant text,
+  skips trivial sessions (< 500 chars), summarizes via headless `claude -p --model sonnet`, and
+  **splices one bullet in right after the "newest first." marker** (newest-first). Runs the headless
+  call from a neutral dir so this very `SessionEnd` hook doesn't recurse; UTF-8 in/out, PLAN.md
+  written BOM-less. Verified: parses clean, dry-run emits a grounded single bullet, end-to-end
+  splice lands the note with valid UTF-8 (no mojibake) and no BOM. Also backfilled AUTOMATION.md's
+  session-start hook doc (TP-028 had missed it). **Big bite (5 files)** — flagged; one cohesive
+  hook + its docs. — 2026-06-08
+  - Files: `.claude/hooks/session-end-note.ps1` (new), `.claude/settings.json`, `AUTOMATION.md`, `.gitignore`, `PLAN.md`
 - ⬜ **(P2) TP-030-PROMPTOPS--prompt-log-noise-filter** — `capture-prompt.ps1` skips records
   that aren't real user prompts (`<task-notification>` blocks, `ultraplan`/CLI status echoes).
   **Why:** 5 such rows polluted the analysis; filtering at write time makes every future audit
