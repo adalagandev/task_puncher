@@ -165,6 +165,15 @@ Decisions locked in (2026-06-01):
   - Files: `.claude/hooks/capture-prompt.ps1` (bite-size)
 - ✅ **TP-028-DEVX--session-start-rules-hook** — added a `SessionStart` hook (`load-working-rules.ps1` + wiring in `.claude/settings.json`) that injects `whats_up_claude.md` into context at session start, so the working rules load **deterministically via the harness** instead of relying on Claude noticing the "read it" line in CLAUDE.md. The script reads the file with `[System.IO.File]::ReadAllText(..., UTF8)` — PS 5.1's `Get-Content -Raw` mangled the UTF-8 em-dashes and attached `PSPath` note-properties to the string — and emits it as `hookSpecificOutput.additionalContext`. Also updated CLAUDE.md's session-start step to report which hooks are active. Pipe-tested (valid JSON, clean string); fires next session — verify via `/hooks`. — 2026-06-07
   - Files: `.claude/hooks/load-working-rules.ps1` (new), `.claude/settings.json`, `CLAUDE.md` (bite-size)
+- ✅ **TP-038-DEVX--custom-agents** — added two project subagents alongside `code-reviewer`:
+  **`qa-agent`** (runs the real gates — backend `pytest` + the frontend `npm run build` type-check —
+  and checks behavior against the domain invariants; verifies and reports, never edits) and
+  **`mock-data-manager`** (keeps the local mock dataset on the happy path, **capped at 25 tasks**,
+  reconciling it when a user/another agent touches it; drives the existing `seed_mock.py`/API,
+  never edits code). Both are config-only `.md` agent definitions (model `sonnet`). The
+  mock-data-manager's "trigger at app startup" is its invocation context — truly auto-firing on
+  uvicorn boot would be a separate FastAPI-lifespan change (flagged, not done). — 2026-06-08
+  - Files: `.claude/agents/qa-agent.md` (new), `.claude/agents/mock-data-manager.md` (new), `PLAN.md` (bite-size)
 
 ## EPIC: DOCS — documentation & process
 - ✅ **TP-016-DOCS--plan-task-tracker** — made PLAN.md the single task tracker (rules 8–10) and retired `BACKLOG.md`. — [PR #9] — 2026-06-01
