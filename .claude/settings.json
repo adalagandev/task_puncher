@@ -11,7 +11,7 @@
               "-ExecutionPolicy",
               "Bypass",
               "-File",
-              "D:\\ai_personal_projects\\task_puncher\\.claude\\hooks\\load-working-rules.ps1"
+              ".claude\\hooks\\load-working-rules.ps1"
             ]
           }
         ]
@@ -28,7 +28,7 @@
               "-ExecutionPolicy",
               "Bypass",
               "-File",
-              "D:\\ai_personal_projects\\task_puncher\\.claude\\hooks\\session-end-note.ps1"
+              ".claude\\hooks\\session-end-note.ps1"
             ]
           }
         ]
@@ -45,7 +45,7 @@
               "-ExecutionPolicy",
               "Bypass",
               "-File",
-              "D:\\ai_personal_projects\\task_puncher\\.claude\\hooks\\capture-prompt.ps1"
+              ".claude\\hooks\\capture-prompt.ps1"
             ]
           }
         ]
@@ -63,7 +63,7 @@
               "-ExecutionPolicy",
               "Bypass",
               "-File",
-              "D:\\ai_personal_projects\\task_puncher\\.claude\\hooks\\pr-review.ps1"
+              ".claude\\hooks\\pr-review.ps1"
             ]
           }
         ]
